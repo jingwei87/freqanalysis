@@ -17,7 +17,7 @@ for user in ${users[@]}; do
 	if [ -f "${fsl}"/${snapshot}.tar.gz ]; then
 		tar zxf "${fsl}"/${snapshot}.tar.gz  
 		"${hasher}"/hf-stat -h ${snapshot}/${snapshot}.8kb.hash.anon > tmp/${snapshot} 
-		./fsl-count tmp/${snapshot} "dbs/F_${date_of_latext}/"
+		./count tmp/${snapshot} "dbs/F_${date_of_latext}/"
 		rm -rf ${snapshot}
 	fi
 done
@@ -36,7 +36,7 @@ for aux in ${date_of_aux[@]}; do
 		if [ -f "${fsl}"/${snapshot}.tar.gz ]; then
 			tar zxf "${fsl}"/${snapshot}.tar.gz  
 			"${hasher}"/hf-stat -h ${snapshot}/${snapshot}.8kb.hash.anon > tmp/${snapshot} 
-			./fsl-count tmp/${snapshot} "dbs/F_${aux}/"
+			./count tmp/${snapshot} "dbs/F_${aux}/"
 			rm -rf ${snapshot}
 		fi
 	done
