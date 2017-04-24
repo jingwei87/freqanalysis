@@ -1,0 +1,24 @@
+NOTE: 
+1. Change the variables in fsl-trace.sh to specify the pathes to traces and fs-hasher
+2. The scripts cannot be run twice because the training database will be updated to a ranking database after an execution
+
+Input: a training trace S, a target trace T
+
+Sort the frequency count of chunks in S and T
+For each chunk C in T
+	Denote its rank in T as r_T
+	if C exists in S and C is the r_T-th chunk of S
+		Present a successful attack
+
+UPDATE [July 7, 2016]:
+1. In algorithm sort the frequency count from high to low
+2. Support both FSL and Synthetic trace analysis
+	2.1 For FSL trace:
+		(a) Put the training and target tar.gz packages in fsl-training and target trace directories, respectively;
+		(b) Run fsl-trace.sh
+	2.2 For Synthetic trace:
+		(a) Rename synethetic snapshot to vm1-XXX and put these snapshots in current directory (e.g., ./frequency-analysis), where XXX represents a number starting from 1
+		(b) Run hash-synthetic-data.sh to generate 8KB-chunking trace on the synthetic data
+		(c) Put the synthetic data traces (like vm1-XXX.8kb.hash.anon) in the synthetic-training and target-trace directories
+		(d) Run synthetic-trace.sh 
+
