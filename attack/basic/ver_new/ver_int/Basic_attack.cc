@@ -21,7 +21,7 @@ using namespace std;
 struct Node
 {
 	char hash_name[FP_SIZE];
-	uint64_t count;
+	int count;
 
 	bool operator<(const Node& a) const
 	{
@@ -80,7 +80,8 @@ void ReadDbs(int type)
 		string value;
 		status = temp_db->Get(leveldb::ReadOptions(), it->key(), &value);
 		assert(status.ok());
-		uint64_t temp_count = strtoimax(value.data(), NULL, 10);
+		//uint64_t temp_count = strtoimax(value.data(), NULL, 10);
+		int temp_count = *(int *)value.c_str();
 		Node temp_Node;
 		memcpy(temp_Node.hash_name, it->key().ToString().c_str(), FP_SIZE);
 		temp_Node.count = temp_count;
@@ -131,6 +132,6 @@ int main(int argc, char *argv[])
 	ReadDbs(TARGET);
 	Stat_Unique();
 	Fre_Analysis();
-	printf("Total Unique Chunk:%d\nCorrect Chunk:%d\n", Unique, Correct);
+	printf("Total Unique Chunk:%d\nInvolved Chunk:%d\nCorrect Chunk:%d\n", Unique, Involved, Correct);
 	return 0;
 }
