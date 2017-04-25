@@ -36,7 +36,7 @@ leveldb::DB *Trainingdb = NULL;
 leveldb::DB *Targetdb = NULL;
 leveldb::DB *Uniquedb = NULL;
 
-int Unique, Correct, Involved;
+int Unique, Correct;
 int Max_lenth;
 priority_queue<Node, vector<Node> >Training_queue;
 priority_queue<Node, vector<Node> >Target_queue;
@@ -55,7 +55,6 @@ void Init_Db(char *Db_name, int type)
 	status = leveldb::DB::Open(options, Db_name, &Uniquedb);
 
  	assert(status.ok());
-//	assert(db != NULL);
 }
 
 void ReadDbs(int type)
@@ -80,13 +79,12 @@ void ReadDbs(int type)
 		string value;
 		status = temp_db->Get(leveldb::ReadOptions(), it->key(), &value);
 		assert(status.ok());
-		//uint64_t temp_count = strtoimax(value.data(), NULL, 10);
 		int temp_count = *(int *)value.c_str();
 		Node temp_Node;
 		memcpy(temp_Node.hash_name, it->key().ToString().c_str(), FP_SIZE);
 		temp_Node.count = temp_count;
 		//-------------Inserting begin------------------
-		if((*temp_que).size() < Max_lenth)
+		if((*temp_que).size() < (unsigned int)Max_lenth)  // Max_lenth > 0
 		{
 			(*temp_que).push(temp_Node);
 		}else
@@ -109,14 +107,8 @@ void Stat_Unique()
 void Fre_Analysis()
 {
 	int size = min(Training_queue.size(), Target_queue.size());
-	Involved = size;
 	for(int i = 0;i < size; i++)
 	{
-		/*
-		for(int i = 0;i <= FP_SIZE; i++)
-		printf("%02x:",(unsigned char)Training_queue.top().hash_name[i]);printf("\t%ld\t",Training_queue.top().count);
-		for(int i = 0;i <= FP_SIZE; i++)
-		printf("%02x:",(unsigned char)Target_queue.top().hash_name[i]);printf("\t%ld\n",Target_queue.top().count);*/	
 		if(memcmp(Training_queue.top().hash_name, Target_queue.top().hash_name, FP_SIZE) == 0) Correct ++ ;
 		Training_queue.pop();Target_queue.pop();
 	}
@@ -125,13 +117,11 @@ int main(int argc, char *argv[])
 {
 	Init_Db(argv[1], TRAINING);
 	Init_Db(argv[2], TARGET);
-//	Init_Db("Unique-DB",UNIQUE);
 	Max_lenth = 99999999;
-//	Max_lenth = atoi(argv[1]);
 	ReadDbs(TRAINING);
 	ReadDbs(TARGET);
 	Stat_Unique();
 	Fre_Analysis();
-	printf("Total Unique Chunk:%d\nInvolved Chunk:%d\nCorrect Chunk:%d\n", Unique, Involved, Correct);
+	printf("Total number of unique chunks:%d\nCorrect inference:%d\n", Unique, Correct);
 	return 0;
 }

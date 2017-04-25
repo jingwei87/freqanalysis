@@ -12,7 +12,6 @@ Basic_attack: ./Basic_attack.cc
 	$(CC) $(CFLAGS) -o Count Basic_count.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
 	$(CC) $(CFLAGS) -o Attack Basic_attack.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
 clean:
-	@rm -f Result
 	@rm -f $(MAIN_OBJS)
 	@rm -rf dbs/
 	@rm -rf tmp/
