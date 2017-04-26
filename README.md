@@ -28,27 +28,31 @@ The basic attack builds on classical frequency analysis. Follow the steps to
 simulate the basic attack.
 
 **Step 1, configure pre-requsite components:** copy `util/fs-hasher/` and
-`util/leveldb/` into `attacks/basic/` and compile them respectively.  
+`util/leveldb/` into `attack/basic/` and compile them respectively.  
 
-**Step 2, configure basic attack:** modify variables in `attacks/basic/Basic_script.sh` to adapt expected settings:
+**Step 2, configure basic attack:** modify variables in `attack/basic/Basic_script.sh` to adapt expected settings:
 
 - `fsl` specifies the path of the fsl trace.
 - `users` specifies which users are collectively considered in backups.
 - `date_of_aux` specifies the backups of which dates are separately considered as auxiliary information.
 - `date_of_latest` specifies the backup of which date is the target for inference.
 
-To compile the program of the basic attack, run the command
+
+**Step 3, run basic attack:** type the following command to compile and run the basic attack.  
 ```
-cd attacks/basic/
-make
-```
-**Step 3, run basic attack:** type the command
-```
-./Basic_script.sh
+cd attack/basic/ && make && ./Basic_script.sh
 ```
 
-#### Result
-The result of basic attack is shown as follows
+
+ 
+
+
+### Locality-based Attack
+
+## Defense: MinHash Encryption 
+
+## Results & Remark
+The result of attack is shown as follows
 
 ```
 Auxilliary information: YYYY-MM-DD; 	Target backup: YYYY-MM-DD
@@ -64,11 +68,3 @@ reason is different sorting algorithms may break tied chunks (that
 have the same frequency rank) in different ways and lead to (slightly) different
 results. 
 
- 
-
-
-### Locality-based Attack
-
-## Defense Usages
-
-### MinHash Encryption
