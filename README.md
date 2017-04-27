@@ -15,7 +15,7 @@ We study how frequency analysis practically affects information leakage in encry
 The attack is running under Linux (e.g., Ubuntu 14.04) with a C++ compiler (e.g., g++). To run the attack program, you need to install/compile the following dependencies. 
 
 - Libssl API: run the command `sudo apt-get install libssl-dev`.
-- Snappy compression library: run the command `sudo apt-get install libsnappy`.
+- Snappy compression library: run the command `sudo apt-get install libsnappy-dev`.
 - [Google Leveldb](https://github.com/google/leveldb): a version of 1.20 is provided in `util/` 
 - [fs-hasher](http://tracer.filesystems.org/fs-hasher-0.9.4.tar.gz): a version
 	of 0.9.4 is provided in `util/` 
