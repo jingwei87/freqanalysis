@@ -38,9 +38,11 @@ simulate the basic attack.
 - `date_of_latest` specifies the backup of which date is the target for inference.
 
 
-**Step 3, run basic attack:** type the following command to compile and run the basic attack.  
+**Step 3, run basic attack:** type the following commands to compile and run the basic attack.  
 ```
-cd attack/basic/ && make && ./Basic_script.sh
+$ cd attack/basic/ 
+$ make 
+$ ./Basic_script.sh
 ```
 
 
