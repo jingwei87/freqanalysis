@@ -134,7 +134,7 @@ void read_hashes(FILE *fp)
 			{
 				int pos = 0;
 				int xi = 0;
-				while(pos < existing_value.size()-1)
+				while((unsigned int)pos < existing_value.size()-1)
 				{
 					if(memcmp(existing_value.c_str()+pos, last_value.c_str(), FP_SIZE) == 0)
 					{
@@ -187,7 +187,7 @@ void read_hashes(FILE *fp)
 			{
 				int ind = 0;
 				int yi = 0;
-				while(ind < existing_value.size()-1)
+				while((unsigned int)ind < existing_value.size()-1)
 				{
 					if(memcmp(existing_value.c_str()+ind, next_value.c_str(), FP_SIZE) == 0)
 					{

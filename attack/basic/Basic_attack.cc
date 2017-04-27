@@ -14,9 +14,9 @@
 using namespace std;
 
 #define FP_SIZE 6
+
 #define TRAINING 1
 #define TARGET 2
-#define UNIQUE 3
 
 struct Node
 {

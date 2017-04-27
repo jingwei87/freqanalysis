@@ -34,17 +34,21 @@ struct cmp
 	}
 };
 
-leveldb::DB *origin;
-leveldb::DB *left_o;
-leveldb::DB *right_o;
-leveldb::DB *target;
-leveldb::DB *left_t;
-leveldb::DB *right_t;
-leveldb::DB *uniq;
+leveldb::DB *origin;	// F_M
+leveldb::DB *left_o;	// L_M
+leveldb::DB *right_o;	// R_M
 
+leveldb::DB *target;	// F_C
+leveldb::DB *left_t;	// L_C
+leveldb::DB *right_t;	// R_C
+
+// unique db is used to record all inferred chunks
+leveldb::DB *uniq;
 
 priority_queue<node, vector<node>, cmp > pq;
 priority_queue<node, vector<node>, cmp > pc;
+
+// q_o and q_t implement inferred set G
 queue<node> q_o;
 queue<node> q_t;
 
@@ -74,7 +78,8 @@ void init_db(std::string db_name, int type)
 	if(type == 3) uniq = db;
 }
 
-void stat_db()//count toltal number of DB and calculate leaked chunk depending on leadkage rate
+// enqueue leaked chunks based on leakage rate
+void stat_db()
 {
 	leveldb::Iterator* it = target->NewIterator(leveldb::ReadOptions());
 	leveldb::Status status;
@@ -94,7 +99,6 @@ void stat_db()//count toltal number of DB and calculate leaked chunk depending o
 				entry_o.count = strtoimax(existing_value.data(), NULL, 10);
 				q_o.push(entry_o);
 
-
 				node entry_t;
 				memcpy(entry_t.key, it->key().ToString().c_str(), FP_SIZE);
 				entry_t.count = strtoimax(it->value().ToString().c_str(), NULL, 10);
@@ -112,7 +116,7 @@ void stat_db()//count toltal number of DB and calculate leaked chunk depending o
 		}
 	}
 
-	printf("unique chunk: %lu\nleak count: %lu\nenqueue count: %lu\n", total, common, leak);
+//	printf("unique chunk: %lu\nleak count: %lu\nenqueue count: %lu\n", total, common, leak);
 }
 
 void print_fp(node a)
@@ -224,6 +228,7 @@ void right_insert(int type, char* fp, uint64_t k)
 
 }
 
+// insert top-k frequent chunks (in db) into pq
 void db_insert(leveldb::DB* db, uint64_t k)
 {
 	leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
@@ -247,7 +252,6 @@ void db_insert(leveldb::DB* db, uint64_t k)
 		}
 	}	
 
-
 }
 
 void main_loop()
@@ -258,7 +262,7 @@ void main_loop()
 
 	//	if(LEAK_RATE == 0){
 	db_insert(origin, INIT);
-	while (!pq.empty())//inverting the sequence 
+	while (!pq.empty())//inverting chunk sequence (i.e., sort u-frequent chunks by frequency) 
 	{
 		tmp.push(pq.top());
 		pq.pop();
@@ -271,12 +275,12 @@ void main_loop()
 	}
 
 	db_insert(target, INIT);
-	while (!pq.empty())//inverting the sequence
+	while (!pq.empty())//inverting the sequence (i.e., sort u-frequent chunks by frequency) 
 	{
 		tmp.push(pq.top());
 		pq.pop();
 	}
-	while (!tmp.empty())//count unique chunk
+	while (!tmp.empty())//count unique chunk 
 	{
 		leveldb::Status s;
 		leveldb::Slice k(tmp.top().key, FP_SIZE);
@@ -285,6 +289,8 @@ void main_loop()
 		sprintf(buf, "%lu", tmp.top().count);
 		leveldb::Slice u(buf, sizeof(uint64_t));
 		s = uniq->Put(leveldb::WriteOptions(), k, u);
+
+		// insert chunks into q_t
 		q_t.push(tmp.top());
 		tmp.pop();
 	}
@@ -293,12 +299,17 @@ void main_loop()
 	while(!q_o.empty() && !q_t.empty())
 	{
 		if(memcmp(q_o.front().key, q_t.front().key, FP_SIZE) == 0) correct++;
+
+		// clear
 		while(!pq.empty()) pq.pop();
 		while(!pc.empty()) pc.pop();
 		while(!omp.empty()) omp.pop();
 		while(!tmp.empty()) tmp.pop();
+
 		left_insert(0, q_o.front().key, TH_K);
 		left_insert(1, q_t.front().key, TH_K);
+
+		// sort chunks by frequency
 		while (!pq.empty() && !pc.empty())
 		{
 			omp.push(pq.top());
@@ -306,6 +317,7 @@ void main_loop()
 			pq.pop();
 			pc.pop();
 		}
+
 		while (!tmp.empty() && !omp.empty())
 		{
 			leveldb::Status ss;
@@ -313,6 +325,7 @@ void main_loop()
 			std::string ex;
 			ss = uniq->Get(leveldb::ReadOptions(), kk, &ex);
 
+			// if  ciphertext chunk has not been inferred
 			if(!ss.ok())
 			{
 				if(q_o.size()+1 > QUEUE_LIMIT) break;
@@ -328,13 +341,14 @@ void main_loop()
 			tmp.pop();
 		}
 
-
 		while(!pq.empty()) pq.pop();
 		while(!pc.empty()) pc.pop();
 		while(!omp.empty()) omp.pop();
 		while(!tmp.empty()) tmp.pop();
+
 		right_insert(0, q_o.front().key, TH_K);
 		right_insert(1, q_t.front().key, TH_K);
+
 		while (!pq.empty() && !pc.empty())
 		{
 			omp.push(pq.top());
@@ -378,10 +392,13 @@ int main (int argc, char *argv[])
 	init_db(argv[8], 2);
 	init_db(argv[9], 21);
 	init_db(argv[10], 22);
+
 	init_db("./uniq-db/", 3);
-	INIT = atoi(argv[1]);
-	TH_K = atoi(argv[2]);
-	QUEUE_LIMIT = atoi(argv[3]);
+	
+	INIT = atoi(argv[1]);	// u
+	TH_K = atoi(argv[2]);	// v
+	QUEUE_LIMIT = atoi(argv[3]);	// w
+
 	LEAK_RATE = atof(argv[4]);
 
 	stat_db();

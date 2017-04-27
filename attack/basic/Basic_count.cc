@@ -7,15 +7,9 @@
 #include <vector>
 #include "leveldb/db.h"
 
-// #define ANALYSIS_DB "./db/"
 #define FP_SIZE 6
 
 leveldb::DB *db;
-
-uint64_t uniq = 0;
-uint64_t total = 0;
-double ratio = 0.0;
-
 
 void init_db(char *db_name) {
 	leveldb::Options options;
@@ -60,8 +54,6 @@ void read_hashes(FILE *fp) {
 
 		if (status.ok()) {
 			//increment counter
-			//			count = strtoimax(existing_value.c_str(), NULL, 10);
-			//count = strtoimax(existing_value.data(), NULL, 10);
 			count = *(int *)existing_value.c_str();
 			count++;
 			status = db->Delete(leveldb::WriteOptions(), key);
@@ -71,7 +63,6 @@ void read_hashes(FILE *fp) {
 		count_buf.resize(sizeof(int));
 		count_buf.assign((char *)&count, sizeof(int));
 		leveldb::Slice update(count_buf.c_str(), sizeof(int));
-		//		printf("%s\n", update.ToString().c_str());
 		status = db->Put(leveldb::WriteOptions(), key, update);
 
 		if (status.ok() == 0) 
@@ -82,7 +73,6 @@ void read_hashes(FILE *fp) {
 }
 
 int main (int argc, char *argv[]){
-//	assert(argc >= 5);
 	// argv[1] points to hash file; argv[2] points to analysis db  
 
 	assert(argv[2] != NULL);
