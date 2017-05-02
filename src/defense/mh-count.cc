@@ -98,7 +98,7 @@ void read_hashes(FILE *fp, FILE* ft) {
 			citem = strtok(NULL, ":\t\n");
 		}
 
-		uint64_t scit = atoi((const char*)citem);
+		uint64_t scit = atoi((const char*)citem);//This is chunk size
 
 		leveldb::Status status;
 		leveldb::Status cst;
