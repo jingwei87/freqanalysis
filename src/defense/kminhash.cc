@@ -13,7 +13,7 @@
 
 // #define ANALYSIS_DB "./db/"
 #define FP_SIZE 6
-#define K_MINHASH 3
+#define K_MINHASH 1
 #define SEG_SIZE ((2<<20)) //1MB default
 #define SEG_MIN ((2<<19)) //512KB
 #define SEG_MAX ((2<<21)) //2MB
@@ -30,10 +30,16 @@ struct cmp{
 		return memcmp(b.key, a.key, FP_SIZE); // b > a return 1
 	}
 };
-
+leveldb::DB *relate;
 priority_queue<node, vector<node>, cmp > pq;
 queue<node> sq;
-
+void init_relate(char *rel){
+      leveldb::Options options;
+      options.create_if_missing = true;
+      leveldb::Status status = leveldb::DB::Open(options, rel, &relate);
+      assert(status.ok());
+        assert(relate != NULL);
+}
 uint64_t sq_size = 0;
 
 void process_seg(){
@@ -54,6 +60,10 @@ void process_seg(){
 		MD5((unsigned char*)ft, FP_SIZE*2, md5full);
 		memcpy(ret, md5full, FP_SIZE);
 
+		leveldb::Status cst;
+		leveldb::Slice key(ret, FP_SIZE);
+		leveldb::Slice pkey(core.key, FP_SIZE);
+		cst = relate->Put(leveldb::WriteOptions(), key, pkey);
 		int j;
 		printf("%.2hhx", ret[0]);
 		for(j = 1; j < FP_SIZE; j++)
@@ -127,6 +137,7 @@ int main (int argc, char *argv[]){
 	FILE *fp = NULL;
 	fp = fopen(argv[1], "r");
 	assert(fp != NULL);
+	init_relate("./relate-db/");
 	read_hashes(fp);
 
 	fclose(fp);
