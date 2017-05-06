@@ -157,7 +157,7 @@ void left_insert(int type, char* fp, uint64_t k)
 			memcpy(tar, existing_value.c_str()+len, FP_SIZE);
 
 			const char* t_int = existing_value.c_str()+len+FP_SIZE;
-			tmp = *(int*)t_int;
+			tmp = *(uint64_t*)t_int;
 			node entry;
 			memcpy(entry.key, tar, FP_SIZE);
 			entry.count = tmp;
@@ -205,7 +205,7 @@ void right_insert(int type, char* fp, uint64_t k)
 		{
 			memcpy(tar, existing_value.c_str()+len, FP_SIZE);
 			const char* t_int = existing_value.c_str()+len+FP_SIZE;
-			tmp = *(int*)t_int;
+			tmp = *(uint64_t*)t_int;
 			node entry;
 			memcpy(entry.key, tar, FP_SIZE);
 			entry.count = tmp;

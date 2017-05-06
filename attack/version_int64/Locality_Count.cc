@@ -140,38 +140,38 @@ void read_hashes(FILE *fp)
 						xi = 1;//this chunk is already existed in left_db
 						break;
 					}
-					pos += FP_SIZE + sizeof(int);
+					pos += FP_SIZE + sizeof(uint64_t);
 				}
 				if(xi == 0)
 				{
 					existing_value += last_value;
 					std::string str_count;
-					str_count.resize(sizeof(int));
-					int init_value = 1;
-					str_count.assign((char*)&init_value, sizeof(int));
+					str_count.resize(sizeof(uint64_t));
+					uint64_t init_value = 1;
+					str_count.assign((char*)&init_value, sizeof(uint64_t));
 					existing_value += str_count;
 				}else
 				{
 					const char* tc = existing_value.c_str()+pos+FP_SIZE;
-					int icm = *(int*)tc;
+					uint64_t icm = *(uint64_t*)tc;
 					icm ++;
-					char tmp[sizeof(int)];
-					memcpy(tmp, (const char*)&icm, sizeof(int));
-					existing_value.replace(pos+FP_SIZE, sizeof(int), tmp, sizeof(int));
+					char tmp[sizeof(uint64_t)];
+					memcpy(tmp, (const char*)&icm, sizeof(uint64_t));
+					existing_value.replace(pos+FP_SIZE, sizeof(uint64_t), tmp, sizeof(uint64_t));
 				}
 				status = store_left->Delete(leveldb::WriteOptions(), key);
 			}else
 			{
 				existing_value = last_value;
 				std::string i_str;
-				i_str.resize(sizeof(int));
-				int i_v = 1;
-				i_str.assign((char*)&i_v, sizeof(int));
+				i_str.resize(sizeof(uint64_t));
+				uint64_t i_v = 1;
+				i_str.assign((char*)&i_v, sizeof(uint64_t));
 				existing_value += i_str;
 			}
 
 			int size = existing_value.length();
-			if(size % 10 != 0) printf("current size %d :: last size %lu\n", size, last_value.size());
+			if(size % 14 != 0) printf("current size %d :: last size %lu\n", size, last_value.size());
 			leveldb::Slice current(existing_value.c_str(), existing_value.size());
 			status = store_left->Put(leveldb::WriteOptions(), key, current);
 		//-----------------------count left database finished, start count right database ---------------------- 
@@ -193,33 +193,33 @@ void read_hashes(FILE *fp)
 						yi = 1;
 						break;
 					}
-					ind += FP_SIZE + sizeof(int);
+					ind += FP_SIZE + sizeof(uint64_t);
 				}
 				if(yi == 0)
 				{
 					existing_value += next_value;
 					std::string str_count;
-					str_count.resize(sizeof(int));
-					int init_value = 1;
-					str_count.assign((char*)&init_value, sizeof(int));
+					str_count.resize(sizeof(uint64_t));
+					uint64_t init_value = 1;
+					str_count.assign((char*)&init_value, sizeof(uint64_t));
 					existing_value += str_count;
 				}else
 				{
 					const char* tc = existing_value.c_str()+ind+FP_SIZE;
-					int icm = *(int*)tc;
+					uint64_t icm = *(uint64_t*)tc;
 					icm ++;
-					char tmp[sizeof(int)];
-					memcpy(tmp, (const char*)&icm, sizeof(int));
-					existing_value.replace(ind+FP_SIZE, sizeof(int), tmp, sizeof(int));
+					char tmp[sizeof(uint64_t)];
+					memcpy(tmp, (const char*)&icm, sizeof(uint64_t));
+					existing_value.replace(ind+FP_SIZE, sizeof(uint64_t), tmp, sizeof(uint64_t));
 				}
 				status = store_right->Delete(leveldb::WriteOptions(), pre);
 			}else
 			{
 				existing_value = next_value;
 				std::string i_str;
-				i_str.resize(sizeof(int));
-				int i_v = 1;
-				i_str.assign((char*)&i_v, sizeof(int));
+				i_str.resize(sizeof(uint64_t));
+				uint64_t i_v = 1;
+				i_str.assign((char*)&i_v, sizeof(uint64_t));
 				existing_value += i_str;
 			}
 
