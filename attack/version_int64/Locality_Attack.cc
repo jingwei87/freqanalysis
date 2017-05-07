@@ -118,7 +118,7 @@ void stat_db()
 		}
 	}
 
-//	printf("unique chunk: %lu\nleak count: %lu\nenqueue count: %lu\n", total, common, leak);
+	printf("unique chunk: %lu\nleak count: %lu\nenqueue count: %lu\n", total, common, leak);
 }
 
 void print_fp(node a)
@@ -176,7 +176,7 @@ void left_insert(int type, char* fp, uint64_t k)
 			}
 
 
-			len += (FP_SIZE+sizeof(int));	
+			len += (FP_SIZE+sizeof(uint64_t));	
 		}
 	}
 }
@@ -224,7 +224,7 @@ void right_insert(int type, char* fp, uint64_t k)
 			}
 
 
-			len += (FP_SIZE+sizeof(int));	
+			len += (FP_SIZE+sizeof(uint64_t));	
 		}
 	}
 
