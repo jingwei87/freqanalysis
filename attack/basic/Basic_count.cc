@@ -48,21 +48,21 @@ void read_hashes(FILE *fp) {
 		leveldb::Slice key(hash, FP_SIZE);
 
 		// reference count
-		int count;
+		uint64_t count;
 		std::string existing_value;
 		status = db->Get(leveldb::ReadOptions(), key, &existing_value);
 
 		if (status.ok()) {
 			//increment counter
-			count = *(int *)existing_value.c_str();
+			count = *(uint64_t *)existing_value.c_str();
 			count++;
 			status = db->Delete(leveldb::WriteOptions(), key);
 		} else 
 			count = 1;	// set 1
 		std::string count_buf = "";
-		count_buf.resize(sizeof(int));
-		count_buf.assign((char *)&count, sizeof(int));
-		leveldb::Slice update(count_buf.c_str(), sizeof(int));
+		count_buf.resize(sizeof(uint64_t));
+		count_buf.assign((char *)&count, sizeof(uint64_t));
+		leveldb::Slice update(count_buf.c_str(), sizeof(uint64_t));
 		status = db->Put(leveldb::WriteOptions(), key, update);
 
 		if (status.ok() == 0) 

@@ -21,7 +21,7 @@ using namespace std;
 struct Node
 {
 	char hash_name[FP_SIZE];
-	int count;
+	uint64_t count;
 
 	bool operator<(const Node& a) const
 	{
@@ -36,8 +36,8 @@ leveldb::DB *Trainingdb = NULL;
 leveldb::DB *Targetdb = NULL;
 leveldb::DB *Uniquedb = NULL;
 
-int Unique, Correct;
-int Max_lenth;
+uint64_t Unique, Correct;
+uint64_t Max_lenth;
 priority_queue<Node, vector<Node> >Training_queue;
 priority_queue<Node, vector<Node> >Target_queue;
 
@@ -79,12 +79,12 @@ void ReadDbs(int type)
 		string value;
 		status = temp_db->Get(leveldb::ReadOptions(), it->key(), &value);
 		assert(status.ok());
-		int temp_count = *(int *)value.c_str();
+		uint64_t temp_count = *(uint64_t *)value.c_str();
 		Node temp_Node;
 		memcpy(temp_Node.hash_name, it->key().ToString().c_str(), FP_SIZE);
 		temp_Node.count = temp_count;
 		//-------------Inserting begin------------------
-		if((*temp_que).size() < (unsigned int)Max_lenth)  // Max_lenth > 0
+		if((*temp_que).size() < Max_lenth)  // Max_lenth > 0
 		{
 			(*temp_que).push(temp_Node);
 		}else
@@ -106,8 +106,8 @@ void Stat_Unique()
 
 void Fre_Analysis()
 {
-	int size = min(Training_queue.size(), Target_queue.size());
-	for(int i = 0;i < size; i++)
+	uint64_t size = min(Training_queue.size(), Target_queue.size());
+	for(uint64_t i = 0;i < size; i++)
 	{
 		if(memcmp(Training_queue.top().hash_name, Target_queue.top().hash_name, FP_SIZE) == 0) Correct ++ ;
 		Training_queue.pop();Target_queue.pop();
