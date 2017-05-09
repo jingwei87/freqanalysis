@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <stdio.h>
-#include <sys/time.h>
 #include <string.h>
 #include <stdlib.h>
 #include <openssl/bn.h>
@@ -43,22 +42,6 @@ void init_db(char *db_name)
 	assert(db != NULL);
 }
 
-void timerstart(double *t)
-{
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	*t = (double)tv.tv_sec+(double)tv.tv_usec*1e-6;
-}
-
-double timersplit(const double *t){
-	struct timeval tv;
-	double cur_t;
-	gettimeofday(&tv, NULL);
-	cur_t = (double)tv.tv_sec + (double)tv.tv_usec*1e-6;
-	return (cur_t - *t);
-}
-
-
 void read_hashes(FILE *fp) 
 {
 	char read_buffer[256];
@@ -66,15 +49,10 @@ void read_hashes(FILE *fp)
 	int flag = 0;
 	char last[FP_SIZE];
 	memset(last, 0, FP_SIZE);
-	double t1 = 0;
-	double t2 = 0;
-	double timer, split;
-
 	while (fgets(read_buffer, 256, fp)) 
 	{
 		// skip title line
 		if (strpbrk(read_buffer, "Chunk")) continue;
-		timerstart(&timer);
 		//---------------------------start counting frequency db-----------------------------
 		// a new chunk
 		char hash[FP_SIZE];
@@ -117,9 +95,6 @@ void read_hashes(FILE *fp)
 		if (status.ok() == 0) 
 			fprintf(stderr, "error msg=%s\n", status.ToString().c_str());
 
-		split = timersplit(&timer);
-		t1 += split;
-		timerstart(&timer);
 		//-------------------count frequecy db finished, start counting	left database ----------------------
 		
 		if(flag){
@@ -171,7 +146,6 @@ void read_hashes(FILE *fp)
 			}
 
 			int size = existing_value.length();
-			if(size % 14 != 0) printf("current size %d :: last size %lu\n", size, last_value.size());
 			leveldb::Slice current(existing_value.c_str(), existing_value.size());
 			status = store_left->Put(leveldb::WriteOptions(), key, current);
 		//-----------------------count left database finished, start count right database ---------------------- 
@@ -225,11 +199,7 @@ void read_hashes(FILE *fp)
 
 			leveldb::Slice now(existing_value.c_str(), existing_value.size());
 			status = store_right->Put(leveldb::WriteOptions(), pre, now);
-
-			split = timersplit(&timer);
-			t2 += split;
 		}
-
 
 		// update last chunk
 		memcpy(last, hash, FP_SIZE);
@@ -237,17 +207,13 @@ void read_hashes(FILE *fp)
 	
 	}
 	//-------------------------------------counting finished--------------------------------------- 
-	//out prgram posessing time
-	printf("insert %lf\tadjacent %lf\n", t1 ,t2);
-
 }
 
 int main (int argc, char *argv[])
 {
 	assert(argc >= 5);
-	// argv[1] points to hash file; argv[2] points to analysis db  
+	// argv[1] points to hash file; argv[2] points to frequncy db, argv[3] points to left  db, argv[4] points to right db;  
 
-	assert(argv[2] != NULL);
 	init_db(argv[2]);
 	init_left(argv[3]);
 	init_right(argv[4]);

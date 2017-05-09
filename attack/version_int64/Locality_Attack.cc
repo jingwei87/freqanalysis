@@ -263,8 +263,7 @@ void main_loop()
 	stack<node> tmp;
 	stack<node> omp;
 
-	//	if(LEAK_RATE == 0){
-	db_insert(origin, INIT);
+	if(LEAK_RATE == 0)db_insert(origin, INIT);
 	while (!pq.empty())//inverting chunk sequence (i.e., sort u-frequent chunks by frequency) 
 	{
 		tmp.push(pq.top());
@@ -272,12 +271,10 @@ void main_loop()
 	}
 	while (!tmp.empty())//inserting into a queue
 	{
-
 		q_o.push(tmp.top());
 		tmp.pop();
 	}
-
-	db_insert(target, INIT);
+	if(LEAK_RATE == 0)db_insert(target, INIT);
 	while (!pq.empty())//inverting the sequence (i.e., sort u-frequent chunks by frequency) 
 	{
 		tmp.push(pq.top());
@@ -292,12 +289,10 @@ void main_loop()
 		sprintf(buf, "%lu", tmp.top().count);
 		leveldb::Slice u(buf, sizeof(uint64_t));
 		s = uniq->Put(leveldb::WriteOptions(), k, u);
-
 		// insert chunks into q_t
 		q_t.push(tmp.top());
 		tmp.pop();
 	}
-
 	// MAIN LOOP
 	while(!q_o.empty() && !q_t.empty())
 	{
@@ -389,12 +384,12 @@ void main_loop()
 
 int main (int argc, char *argv[])
 {
-	init_db(argv[5], 1);
-	init_db(argv[6], 11);
-	init_db(argv[7], 12);
-	init_db(argv[8], 2);
-	init_db(argv[9], 21);
-	init_db(argv[10], 22);
+	init_db(argv[5], 1);// refer to original F_db
+	init_db(argv[6], 11);// refer to original L_db
+	init_db(argv[7], 12);// refer to original R_db
+	init_db(argv[8], 2);// refer to targrt F_db
+	init_db(argv[9], 21);// refer to target L_db
+	init_db(argv[10], 22);// refer to target R_db
 
 	init_db("./uniq-db/", 3);
 	
