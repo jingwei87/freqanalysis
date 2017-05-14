@@ -263,35 +263,36 @@ void main_loop()
 	stack<node> tmp;
 	stack<node> omp;
 
-	if(LEAK_RATE == 0)db_insert(origin, INIT);
-	while (!pq.empty())//inverting chunk sequence (i.e., sort u-frequent chunks by frequency) 
+	if(LEAK_RATE == 0)
 	{
-		tmp.push(pq.top());
-		pq.pop();
-	}
-	while (!tmp.empty())//inserting into a queue
-	{
-		q_o.push(tmp.top());
-		tmp.pop();
-	}
-	if(LEAK_RATE == 0)db_insert(target, INIT);
-	while (!pq.empty())//inverting the sequence (i.e., sort u-frequent chunks by frequency) 
-	{
-		tmp.push(pq.top());
-		pq.pop();
-	}
-	while (!tmp.empty())//count unique chunk 
-	{
-		leveldb::Status s;
-		leveldb::Slice k(tmp.top().key, FP_SIZE);
-		char buf[32];
-		memset(buf,0,32);
-		sprintf(buf, "%lu", tmp.top().count);
-		leveldb::Slice u(buf, sizeof(uint64_t));
-		s = uniq->Put(leveldb::WriteOptions(), k, u);
-		// insert chunks into q_t
-		q_t.push(tmp.top());
-		tmp.pop();
+		while (!pq.empty())//inverting chunk sequence (i.e., sort u-frequent chunks by frequency) 
+		{	
+			tmp.push(pq.top());
+			pq.pop();
+		}
+		while (!tmp.empty())//inserting into a queue
+		{
+			q_o.push(tmp.top());
+			tmp.pop();
+		}
+		while (!pq.empty())//inverting the sequence (i.e., sort u-frequent chunks by frequency) 
+		{
+			tmp.push(pq.top());
+			pq.pop();
+		}
+		while (!tmp.empty())//count unique chunk 
+		{
+			leveldb::Status s;
+			leveldb::Slice k(tmp.top().key, FP_SIZE);
+			char buf[32];
+			memset(buf,0,32);
+			sprintf(buf, "%lu", tmp.top().count);
+			leveldb::Slice u(buf, sizeof(uint64_t));
+			s = uniq->Put(leveldb::WriteOptions(), k, u);
+			// insert chunks into q_t
+			q_t.push(tmp.top());
+			tmp.pop();
+		}
 	}
 	// MAIN LOOP
 	while(!q_o.empty() && !q_t.empty())
