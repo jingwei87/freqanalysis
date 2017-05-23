@@ -262,19 +262,22 @@ void main_loop()
 
 	stack<node> tmp;
 	stack<node> omp;
-
 	if(LEAK_RATE == 0)
 	{
+		db_insert(origin, INIT);
 		while (!pq.empty())//inverting chunk sequence (i.e., sort u-frequent chunks by frequency) 
-		{	
+		{
 			tmp.push(pq.top());
 			pq.pop();
 		}
 		while (!tmp.empty())//inserting into a queue
 		{
 			q_o.push(tmp.top());
+			
 			tmp.pop();
 		}
+
+		db_insert(target, INIT);
 		while (!pq.empty())//inverting the sequence (i.e., sort u-frequent chunks by frequency) 
 		{
 			tmp.push(pq.top());
