@@ -145,7 +145,6 @@ void read_hashes(FILE *fp)
 				existing_value += i_str;
 			}
 
-			int size = existing_value.length();
 			leveldb::Slice current(existing_value.c_str(), existing_value.size());
 			status = store_left->Put(leveldb::WriteOptions(), key, current);
 		//-----------------------count left database finished, start count right database ---------------------- 

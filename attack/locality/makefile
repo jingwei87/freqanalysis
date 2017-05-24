@@ -2,11 +2,11 @@ CC = g++
 CFLAGS = -O3 -Wall -fno-operator-names -std=c++0x
 LIBS = -lcrypto -lssl -lpthread -lsnappy 
 INCLUDES =-I./leveldb/include/
-MAIN_OBJS = Locality_Attack.o
+MAIN_OBJS = Locality_attack.o
 
-all: Locality_Attack
+all: Locality_attack
 
-Locality_Attack: ./Locality_Attack.cc
+Locality_attack: ./Locality_attack.cc
 	$(shell ! test -d "dbs" && mkdir dbs)
 	$(shell ! test -d "tmp" && mkdir tmp)
 	$(CC) $(CFLAGS) -o Attack Locality_attack.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
