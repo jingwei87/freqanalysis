@@ -98,7 +98,7 @@ void ReadDbs(int type)
 	}
 
 }
-
+vector <Node>ansq;
 void Stat_Unique()
 {
 	Unique = Target_queue.size();
@@ -106,10 +106,15 @@ void Stat_Unique()
 
 void Fre_Analysis()
 {
+	ansq.clear();
 	uint64_t size = min(Training_queue.size(), Target_queue.size());
 	for(uint64_t i = 0;i < size; i++)
 	{
-		if(memcmp(Training_queue.top().hash_name, Target_queue.top().hash_name, FP_SIZE) == 0) Correct ++ ;
+		if(memcmp(Training_queue.top().hash_name, Target_queue.top().hash_name, FP_SIZE) == 0)
+		{
+			ansq.push_back(Training_queue.top());
+			Correct ++ ;
+		}
 		Training_queue.pop();Target_queue.pop();
 	}
 }
@@ -122,6 +127,17 @@ int main(int argc, char *argv[])
 	ReadDbs(TARGET);
 	Stat_Unique();
 	Fre_Analysis();
-	printf("Total number of unique chunks:%d\nCorrect inference:%d\n", Unique, Correct);
+	printf("Total number of unique chunks:%ld\nCorrect inference:%ld\n", Unique, Correct);
+	printf("inference ratio: %lf\n\n",(double)((double)Correct/Unique));
+	printf("Successfully inferred following chunks:\n");
+	while(!ansq.empty())
+	{
+		Node tmp = ansq.back();
+		printf("%.2hhx",tmp.hash_name[0]);
+		for (int i = 1;i < FP_SIZE; i++)
+			printf(":%.2hhx", tmp.hash_name[i]);
+		printf("\n");
+		ansq.pop_back();
+	}
 	return 0;
 }

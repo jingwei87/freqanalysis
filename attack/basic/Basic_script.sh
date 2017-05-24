@@ -7,7 +7,7 @@ fsl='/dataset/fsl/2013'
 users=('004' '007' '012' '013' '015' '028')
 
 # auxiliary information
-date_of_aux=('2013-01-22' '2013-02-21' '2013-03-21' '2013-04-22')
+date_of_aux=('2013-01-22' '2013-02-22' '2013-03-22' '2013-04-21')
 
 # target latest backup 
 date_of_latest='2013-05-21'
