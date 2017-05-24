@@ -45,11 +45,27 @@ $ make
 $ ./Basic_script.sh
 ```
 
-
- 
-
-
 ### Locality-based Attack
+
+The locality-based attack exploits chunk locality to improve attack severity. To simulate the locality-based attack, follow the steps below.
+
+**Step 1, configure pre-requsite components:** identical to that in the configuration of the basic attack.  
+
+**Step 2, configure locality-based attack:** In addition to the common variables (e.g., `fsl`, `users`, `date_of_aux` and `date_of_latest`), the locality-based attack builds on four parameters that are defined in `attack/locality/Locality_script.sh`: 
+
+- `u` specifies the number of most frequent chunk pairs to be returned by frequency analysis in initializing the inferred set.
+- `v` specifies the number of most frequent chunk pairs to be returned by frequency analysis in each iteration.
+- `w` specifies the maximum number of ciphertext-plaintext chunk pairs that can be hold by the inferred set.
+- `leakage_rate` specifies the ratio of the number of ciphertext-plaintext chunk pairs known by the adversary to the total number of ciphertext chunks in the latest backup.
+
+
+**Step 3, run locality-based attack:** type the following commands to compile and run the locality-based attack.  
+```
+$ cd attack/locality/ 
+$ make 
+$ ./Locality_script.sh
+```
+
 
 ## Defense: MinHash Encryption 
 
