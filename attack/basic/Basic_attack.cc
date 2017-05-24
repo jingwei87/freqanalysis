@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 	ReadDbs(TARGET);
 	Stat_Unique();
 	Fre_Analysis();
-	printf("Total number of unique chunks:%ld\nCorrect inference:%ld\n", Unique, Correct);
+	printf("Total number of unique chunks: %lu\nCorrect inference: %lu\n", Unique, Correct);
 	printf("inference ratio: %lf%%\n\n",(double)((double)Correct/Unique) * 100.0);
 	printf("Successfully inferred following chunks:\n");
 	while(!ansq.empty())
