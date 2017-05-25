@@ -9,17 +9,17 @@ MAIN_OBJS = Locality_attack.o
 Locality_Attack: ./Locality_attack_E.cc
 	$(shell ! test -d "dbs" && mkdir dbs)
 	$(shell ! test -d "tmp" && mkdir tmp)
-	$(shell ! test -d "relate_db" && mkdir relate_db)
+	$(shell ! test -d "ground-truth" && mkdir ground-truth)
 	$(CC) $(CFLAGS) -o Attack Locality_attack_E.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
 	$(CC) $(CFLAGS) -o Count Locality_count.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
-	$(CC) $(CFLAGS) -o MinHash K_Minhash.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
+	$(CC) $(CFLAGS) -o MinHash K_minhash.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
  
  
 clean:
 	@rm -f Attack
 	@rm -f Count
 	@rm -f MinHash
-	@rm -r ./relate_db
+	@rm -r ./ground-truth
 	@rm -rf ./tmp
 	@rm -f $(MAIN_OBJS)
 	@rm -rf ./dbs

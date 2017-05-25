@@ -138,7 +138,7 @@ int main (int argc, char *argv[]){
 	fp = fopen(argv[1], "r");
 	printf("Chunk Hash\t\t\tChunk Size (bytes)\tCompression Ratio (tenth)\n");
 	assert(fp != NULL);
-	init_relate("./relate_db/");
+	init_relate("./ground-truth/");
 	read_hashes(fp);
 
 	fclose(fp);

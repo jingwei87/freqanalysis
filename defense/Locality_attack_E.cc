@@ -103,7 +103,6 @@ void stat_db()
 				memcpy(entry_o.key, exs.c_str(), FP_SIZE);
 			//	entry_o.count = strtoimax(existing_value.data(), NULL, 10);
 				entry_o.count = *(uint64_t *)existing_value.c_str();
-				printf("%ld\n", entry_o.count);
 				q_o.push(entry_o);
 
 				node entry_t;
@@ -402,7 +401,8 @@ void main_loop()
 		q_t.pop();
 		involve ++;
 	}
-	printf("Correct inference: %lu\nInference ratio: %lf%%\n", correct, (double)((double)correct/total)*100.0);
+	printf("%ld\n",involve);
+	printf("Correct inference: %lu\nInference ratio: %lf%%\n", correct - leak , (double)((double)(correct - leak)/total)*100.0);
 }
 
 int main (int argc, char *argv[])
@@ -415,7 +415,7 @@ int main (int argc, char *argv[])
 	init_db(argv[10], 22);
 
 	init_db("./inference-db/", 3);
-	init_db("./relate_db/", 4);	
+	init_db("./ground-truth/", 4);	
 	INIT = atoi(argv[1]);	// u
 	TH_K = atoi(argv[2]);	// v
 	QUEUE_LIMIT = atoi(argv[3]);	// w
