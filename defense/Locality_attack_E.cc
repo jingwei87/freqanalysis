@@ -41,7 +41,7 @@ leveldb::DB *right_o;	// R_M
 leveldb::DB *target;	// F_C
 leveldb::DB *left_t;	// L_C
 leveldb::DB *right_t;	// R_C
-leveldb::DB *relate;
+leveldb::DB *relate;  //reference
 // unique db is used to record all inferred chunks
 leveldb::DB *uniq;
 
@@ -69,14 +69,14 @@ void init_db(std::string db_name, int type)
 	assert(status.ok());
 	assert(db != NULL);
 
-	if(type == 1) origin = db;
-	if(type == 11) left_o = db;
-	if(type == 12) right_o = db;
-	if(type == 2) target = db;
-	if(type == 21) left_t = db;
-	if(type == 22) right_t = db;
-	if(type == 3) uniq = db;
-	if(type == 4) relate = db;
+	if(type == 1) origin = db; //type 1 refer to original frequecy db
+	if(type == 11) left_o = db;//type 11 refer to original left db
+	if(type == 12) right_o = db;//type 12 refer to orignal right db
+	if(type == 2) target = db;//type 2 refer to target frequency db
+	if(type == 21) left_t = db;//type 21 refer to target left db
+	if(type == 22) right_t = db;//type 22 refer to target right db
+	if(type == 3) uniq = db;//type 3 refer to reference db
+	if(type == 4) relate = db;//type 4 refer to ground-truth db
 }
 
 // enqueue leaked chunks based on leakage rate
@@ -92,9 +92,10 @@ void stat_db()
 		total ++;
 
                 cst = relate->Get(leveldb::ReadOptions(), it->key(), &exs);
+		//find the plain hash of Encrypted hash (simulate attack)
                 leveldb::Slice ckey(exs.c_str(), FP_SIZE);
 		status = origin->Get(leveldb::ReadOptions(), ckey, &existing_value);
-		if(LEAK_RATE != 0 && rand()%10000 <= LEAK_RATE*10000)//original is INT_MAX as diviser
+		if(LEAK_RATE != 0 && rand()%INT_MAX <= LEAK_RATE*INT_MAX)//original is INT_MAX as diviser
 		{
 			common ++;
 			if (status.ok())
@@ -124,18 +125,7 @@ void stat_db()
 	}
 	 printf("Total number of unique chunks: %lu\nLeakage ratio: %lf%%\n", total,(double)(LEAK_RATE * 100.0));
 }
-
-void print_fp(node a)
-{
-	int len = 0;
-	for (len = 0; len < FP_SIZE; len++)
-	{
-		printf("%02x", (unsigned char)a.key[len]);
-		if (len < FP_SIZE - 1) printf(":");
-	}
-	printf("\t");
-}
-
+//insert left top k-th frequent chunk into pq(original) or pc(target)
 void left_insert(int type, char* fp, uint64_t k)
 {
 	leveldb::Status status;
@@ -184,7 +174,7 @@ void left_insert(int type, char* fp, uint64_t k)
 		}
 	}
 }
-
+//insert right top k-th frequent chunk into pq(original) or pc(target)
 void right_insert(int type, char* fp, uint64_t k)
 {
 	leveldb::Status status;
@@ -234,7 +224,7 @@ void right_insert(int type, char* fp, uint64_t k)
 
 }
 
-// insert top-k frequent chunks (in db) into pq
+// insert top-u frequent chunks (in db) into pq
 void db_insert(leveldb::DB* db, uint64_t k)
 {
 	leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
@@ -309,7 +299,7 @@ void main_loop()
                 leveldb::Slice key(q_t.front().key, FP_SIZE);
                 std::string existing_value;
                 cst = relate->Get(leveldb::ReadOptions(), key, &existing_value);
-                if(cst.ok() && memcmp(q_o.front().key, existing_value.c_str(), FP_SIZE) == 0) 
+                if(cst.ok() && memcmp(q_o.front().key, existing_value.c_str(), FP_SIZE) == 0) //if the plain text hash is the same, the attck success for this chunk;
 		{
 			ansq1.push_back(q_o.front());
 			ansq2.push_back(q_t.front());
@@ -401,7 +391,7 @@ void main_loop()
 		q_t.pop();
 		involve ++;
 	}
-	printf("%ld\n",involve);
+	//(correct - leak) is the successful infered chunk pair
 	printf("Correct inference: %lu\nInference ratio: %lf%%\n", correct - leak , (double)((double)(correct - leak)/total)*100.0);
 }
 
@@ -424,22 +414,22 @@ int main (int argc, char *argv[])
 
 	stat_db();
 	main_loop();
-	printf("\nSuccessfully inferred following chunks:\n");
+	printf("\nSuccessfully inferred following ciphertext-plaintext chunk pairs:\n");
         while(!ansq1.empty())
         {
-                node tmp = ansq1.back();
+                node tmp = ansq2.back();
                 printf("%.2hhx",tmp.key[0]);
                 for (int i = 1;i < FP_SIZE; i++)
                         printf(":%.2hhx", tmp.key[i]);
                 printf("\t");
-                ansq1.pop_back();
+                ansq2.pop_back();
 		
-		tmp = ansq2.back();
+		tmp = ansq1.back();
                 printf("%.2hhx",tmp.key[0]);
                 for (int i = 1;i < FP_SIZE; i++)
                         printf(":%.2hhx", tmp.key[i]);
                 printf("\n");
-                ansq2.pop_back();
+                ansq1.pop_back();
         }
 	return 0;
 }
