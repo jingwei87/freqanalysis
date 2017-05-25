@@ -39,7 +39,7 @@ for aux in ${date_of_aux[@]}; do
 #			rm -rf tmp/${snapshot}
 		fi
 	done
-	echo "=============================================="
+	echo "==========================Attack=========================="
 	echo "Auxilliary information: ${aux};  Target backup: ${date_of_latest}" 
 	# launch frequency analysis
 	./Attack "dbs/F_${aux}" "dbs/F_${date_of_latest}" 
