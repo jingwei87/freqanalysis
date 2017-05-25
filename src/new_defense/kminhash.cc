@@ -62,7 +62,7 @@ void process_seg(){
 
 		leveldb::Status cst;
 		leveldb::Slice key(ret, FP_SIZE);
-		leveldb::Slice pkey(core.key, FP_SIZE);
+		leveldb::Slice pkey(now.key, FP_SIZE);
 		cst = relate->Put(leveldb::WriteOptions(), key, pkey);
 		int j;
 		printf("%.2hhx", ret[0]);

@@ -100,9 +100,10 @@ void stat_db()
 			if (status.ok())
 			{
 				node entry_o;
-				memcpy(entry_o.key, it->key().ToString().c_str(), FP_SIZE);
+				memcpy(entry_o.key, exs.c_str(), FP_SIZE);
 			//	entry_o.count = strtoimax(existing_value.data(), NULL, 10);
 				entry_o.count = *(uint64_t *)existing_value.c_str();
+				printf("%ld\n", entry_o.count);
 				q_o.push(entry_o);
 
 				node entry_t;
@@ -122,8 +123,7 @@ void stat_db()
 			}			
 		}
 	}
-
-	printf("unique chunk: %lu\nleak count: %lu\nenqueue count: %lu\n", total, common, leak);
+	 printf("Total number of unique chunks: %lu\nLeakage ratio: %lf%%\n", total,(double)(LEAK_RATE * 100.0));
 }
 
 void print_fp(node a)
@@ -261,7 +261,7 @@ void db_insert(leveldb::DB* db, uint64_t k)
 	}	
 
 }
-
+vector <node> ansq1, ansq2;
 void main_loop()
 {
 
@@ -310,9 +310,13 @@ void main_loop()
                 leveldb::Slice key(q_t.front().key, FP_SIZE);
                 std::string existing_value;
                 cst = relate->Get(leveldb::ReadOptions(), key, &existing_value);
-/*		if(!cst.ok())printf("CNM!!\n");
-                if(cst.ok() && memcmp(q_o.front().key, existing_value.data(), FP_SIZE) == 0) correct++;
-		for(int j = 0; j < FP_SIZE; j++)
+                if(cst.ok() && memcmp(q_o.front().key, existing_value.c_str(), FP_SIZE) == 0) 
+		{
+			ansq1.push_back(q_o.front());
+			ansq2.push_back(q_t.front());
+			correct++;
+		}
+	/*	for(int j = 0; j < FP_SIZE; j++)
                         printf(":%.2hhx", q_t.front().key[j]);printf("\t");
 		for(int j = 0; j < FP_SIZE; j++)
                         printf(":%.2hhx", q_o.front().key[j]);printf("\n");
@@ -398,7 +402,7 @@ void main_loop()
 		q_t.pop();
 		involve ++;
 	}
-	printf("correct %lu\ninvolve chunk %lu\n", correct, involve);
+	printf("Correct inference: %lu\nInference ratio: %lf%%\n", correct, (double)((double)correct/total)*100.0);
 }
 
 int main (int argc, char *argv[])
@@ -410,7 +414,7 @@ int main (int argc, char *argv[])
 	init_db(argv[9], 21);
 	init_db(argv[10], 22);
 
-	init_db("./uniq-db/", 3);
+	init_db("./inference-db/", 3);
 	init_db("./relate_db/", 4);	
 	INIT = atoi(argv[1]);	// u
 	TH_K = atoi(argv[2]);	// v
@@ -420,6 +424,22 @@ int main (int argc, char *argv[])
 
 	stat_db();
 	main_loop();
-
+	printf("\nSuccessfully inferred following chunks:\n");
+        while(!ansq1.empty())
+        {
+                node tmp = ansq1.back();
+                printf("%.2hhx",tmp.key[0]);
+                for (int i = 1;i < FP_SIZE; i++)
+                        printf(":%.2hhx", tmp.key[i]);
+                printf("\t");
+                ansq1.pop_back();
+		
+		tmp = ansq2.back();
+                printf("%.2hhx",tmp.key[0]);
+                for (int i = 1;i < FP_SIZE; i++)
+                        printf(":%.2hhx", tmp.key[i]);
+                printf("\n");
+                ansq2.pop_back();
+        }
 	return 0;
 }
