@@ -40,7 +40,7 @@ for aux in ${date_of_aux[@]}; do
 		fi
 	done
 	echo "==========================Attack=========================="
-	echo "Auxilliary information: ${aux};  Target backup: ${date_of_latest}" 
+	echo "Auxiliary information: ${aux};  Target backup: ${date_of_latest}" 
 	# launch frequency analysis
 	./Attack "dbs/F_${aux}" "dbs/F_${date_of_latest}" 
 done

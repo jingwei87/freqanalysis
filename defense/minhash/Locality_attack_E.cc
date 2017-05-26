@@ -305,11 +305,6 @@ void main_loop()
 			ansq2.push_back(q_t.front());
 			correct++;
 		}
-	/*	for(int j = 0; j < FP_SIZE; j++)
-                        printf(":%.2hhx", q_t.front().key[j]);printf("\t");
-		for(int j = 0; j < FP_SIZE; j++)
-                        printf(":%.2hhx", q_o.front().key[j]);printf("\n");
-	*/	
 		// clear
 		while(!pq.empty()) pq.pop();
 		while(!pc.empty()) pc.pop();
@@ -421,7 +416,7 @@ int main (int argc, char *argv[])
                 printf("%.2hhx",tmp.key[0]);
                 for (int i = 1;i < FP_SIZE; i++)
                         printf(":%.2hhx", tmp.key[i]);
-                printf("\t");
+                printf("\t\t");
                 ansq2.pop_back();
 		
 		tmp = ansq1.back();

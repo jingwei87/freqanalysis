@@ -41,7 +41,7 @@ for aux in ${date_of_aux[@]}; do
 		fi
 	done
 	echo "===================Attack==================="
-	echo "Auxilliary information: ${aux};  Target backup: ${date_of_latest}" 
+	echo "Auxiliary information: ${aux};  Target backup: ${date_of_latest}" 
 	echo "Parameters: (u, v, w) = (${u}, ${v}, ${w})"
 	# launch frequency analysis
 	./Attack ${u} ${v} ${w} ${leakage_rate} "dbs/F_${aux}" "dbs/L_${aux}" "dbs/R_${aux}" "dbs/F_${date_of_latest}" "dbs/L_${date_of_latest}" "dbs/R_${date_of_latest}"
