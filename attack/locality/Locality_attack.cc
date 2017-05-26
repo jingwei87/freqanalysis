@@ -118,7 +118,7 @@ void stat_db()
 		}
 	}
 
-	printf("Total number of unique chunks: %lu\nLeakage ratio: %lf%%\n", total,(double)(LEAK_RATE * 100.0));
+	printf("Total number of unique ciphertext chunks: %lu\nLeakage rate: %lf%%\n", total,(double)(LEAK_RATE * 100.0));
 }
 
 void print_fp(node a)
@@ -387,7 +387,7 @@ void main_loop()
 		q_t.pop();
 		involve ++;
 	}
-	printf("Correct inference: %lu\nInference ratio: %lf%%\n", correct, (double)((double)correct/total)*100.0);
+	printf("Correct inferences: %lu\nInference rate: %lf%%\n", correct, (double)((double)correct/total)*100.0);
 }
 
 int main (int argc, char *argv[])

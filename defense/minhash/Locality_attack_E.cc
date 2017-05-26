@@ -123,7 +123,7 @@ void stat_db()
 			}			
 		}
 	}
-	 printf("Total number of unique chunks: %lu\nLeakage ratio: %lf%%\n", total,(double)(LEAK_RATE * 100.0));
+	 printf("Total number of unique ciphertext chunks: %lu\nLeakage rate: %lf%%\n", total,(double)(LEAK_RATE * 100.0));
 }
 //insert left top k-th frequent chunk into pq(original) or pc(target)
 void left_insert(int type, char* fp, uint64_t k)
@@ -392,7 +392,7 @@ void main_loop()
 		involve ++;
 	}
 	//(correct - leak) is the successful infered chunk pair
-	printf("Correct inference: %lu\nInference ratio: %lf%%\n", correct - leak , (double)((double)(correct - leak)/total)*100.0);
+	printf("Correct inferences: %lu\nInference rate: %lf%%\n", correct - leak , (double)((double)(correct - leak)/total)*100.0);
 }
 
 int main (int argc, char *argv[])
