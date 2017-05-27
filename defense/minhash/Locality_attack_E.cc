@@ -387,7 +387,7 @@ void main_loop()
 		involve ++;
 	}
 	//(correct - leak) is the successful infered chunk pair
-	printf("Correct inferences: %lu\nInference rate: %lf%%\n", correct, (double)(correct/total)*100.0);
+	printf("Correct inferences: %lu\nInference rate: %lf%%\n", correct, (double)correct/total*100.0);
 }
 
 int main (int argc, char *argv[])
