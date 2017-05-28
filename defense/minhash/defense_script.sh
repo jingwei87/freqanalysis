@@ -23,8 +23,8 @@ for user in ${users[@]}; do
 		tar zxf "${fsl}"/${snapshot}.tar.gz  
 		fs-hasher/hf-stat -h ${snapshot}/${snapshot}.8kb.hash.anon > tmp/${snapshot} 
 		# simulate MinHash encryption
-		./MinHash tmp/${snapshot} > tmp/E_${snapshot}
-		./Count tmp/E_${snapshot} "dbs/F_${date_of_latest}/" "dbs/L_${date_of_latest}/" "dbs/R_${date_of_latest}/"  
+		./minhash tmp/${snapshot} > tmp/E_${snapshot}
+		./count tmp/E_${snapshot} "dbs/F_${date_of_latest}/" "dbs/L_${date_of_latest}/" "dbs/R_${date_of_latest}/"  
 		rm -rf ${snapshot}
 #		rm -rf tmp/${snapshot}
 	fi
@@ -37,7 +37,7 @@ for aux in ${date_of_aux[@]}; do
 		if [ -f "${fsl}"/${snapshot}.tar.gz ]; then
 			tar zxf "${fsl}"/${snapshot}.tar.gz  
 			fs-hasher/hf-stat -h ${snapshot}/${snapshot}.8kb.hash.anon > tmp/${snapshot} 
-			./Count tmp/${snapshot} "dbs/F_${aux}" "dbs/L_${aux}" "dbs/R_${aux}"  
+			./count tmp/${snapshot} "dbs/F_${aux}" "dbs/L_${aux}" "dbs/R_${aux}"  
 			rm -rf ${snapshot}
 #			rm -rf tmp/${snapshot}
 		fi
@@ -46,6 +46,6 @@ for aux in ${date_of_aux[@]}; do
 	echo "Auxiliary information: ${aux};  Target backup: ${date_of_latest}" 
 	echo "Parameters: (u, v, w) = (${u}, ${v}, ${w})"
 	# launch frequency analysis
-	./Attack ${u} ${v} ${w} ${leakage_rate} "dbs/F_${aux}" "dbs/L_${aux}" "dbs/R_${aux}" "dbs/F_${date_of_latest}" "dbs/L_${date_of_latest}" "dbs/R_${date_of_latest}"
+	./attack ${u} ${v} ${w} ${leakage_rate} "dbs/F_${aux}" "dbs/L_${aux}" "dbs/R_${aux}" "dbs/F_${date_of_latest}" "dbs/L_${date_of_latest}" "dbs/R_${date_of_latest}"
 	rm -rf inference-db/
 done
