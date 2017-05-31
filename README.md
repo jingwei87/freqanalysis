@@ -109,11 +109,9 @@ Total number of unique ciphertext chunks: X
 Correct inferences: Y
 Inference rate: ...
 
-Successfully inferred following chunks/ciphertext-plaintext chunk pairs:
+Successfully inferred following chunks:
 ......
 ```
 
-- `X` is the number of unique ciphertext chunks in the encryption of the target backup, while `Y` is the number of (unique) chunks that can be successfully inferred by the attacks. The inference rate is computed by `Y/X`, that is slightly affected by the sorting algorithm in frequency analysis. The reason is different sorting algorithms may break tied chunks (that have the same frequency rank) in different ways and lead to (slightly) different results.  
-
-- The `parameters` and `leakage rate` are only available in the simulation and defense of locality-based attack. We output the inferred ciphertext-plaintext chunk pairs in the defense simulation.      
+`X` is the number of unique ciphertext chunks in the encryption of the target backup, while `Y` is the number of (unique) chunks that can be successfully inferred by the attacks. The inference rate is computed by `Y/X`, that is slightly affected by the sorting algorithm in frequency analysis. The reason is different sorting algorithms may break tied chunks (that have the same frequency rank) in different ways and lead to (slightly) different results. The `parameters` and `leakage rate` are only available in the simulation and defense of locality-based attack. We output the fingerprints of inferred plaintext chunks  in both attack and  defense simulation.      
 
