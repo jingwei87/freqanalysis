@@ -386,7 +386,6 @@ void main_loop()
 		q_t.pop();
 		involve ++;
 	}
-	//(correct - leak) is the successful infered chunk pair
 	printf("Correct inferences: %lu\nInference rate: %lf%%\n", correct, (double)correct/total*100.0);
 }
 
@@ -409,17 +408,17 @@ int main (int argc, char *argv[])
 
 	stat_db();
 	main_loop();
-	printf("\nSuccessfully inferred following ciphertext-plaintext chunk pairs:\n");
+	printf("\nSuccessfully inferred following chunks:\n");
         while(!ansq1.empty())
         {
                 node tmp = ansq2.back();
-                printf("%.2hhx",tmp.key[0]);
-                for (int i = 1;i < FP_SIZE; i++)
-                        printf(":%.2hhx", tmp.key[i]);
-                printf("\t\t");
+                /* printf("%.2hhx",tmp.key[0]); */
+                /* for (int i = 1;i < FP_SIZE; i++) */
+                /*         printf(":%.2hhx", tmp.key[i]); */
+                /* printf("\t\t"); */
                 ansq2.pop_back();
 		
-		tmp = ansq1.back();
+				tmp = ansq1.back();
                 printf("%.2hhx",tmp.key[0]);
                 for (int i = 1;i < FP_SIZE; i++)
                         printf(":%.2hhx", tmp.key[i]);
