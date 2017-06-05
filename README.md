@@ -30,7 +30,7 @@ simulate the basic attack.
 **Step 1, configure pre-requsite components:** copy `util/fs-hasher/` and
 `util/leveldb/` into `attack/basic/` and compile them respectively.  
 
-**Step 2, configure basic attack:** modify variables in `attack/basic/Basic_script.sh` to adapt expected settings:
+**Step 2, configure basic attack:** modify variables in `attack/basic/basic_script.sh` to adapt expected settings:
 
 - `fsl` specifies the path of the fsl trace.
 - `users` specifies which users are collectively considered in backups.
@@ -42,21 +42,21 @@ simulate the basic attack.
 ```
 $ cd attack/basic/ 
 $ make 
-$ ./Basic_script.sh
+$ ./basic_script.sh
 ```
 
 ### Locality-based Attack
 
 The locality-based attack exploits chunk locality to improve attack severity. To simulate the locality-based attack, follow the steps below.
 
-**Step 1, configure pre-requsite components:** copy util/fs-hasher/` and
+**Step 1, configure pre-requsite components:** copy `util/fs-hasher/` and
 `util/leveldb/` into `attack/locality/` and compile them respectively.  
 
-**Step 2, configure locality-based attack:** In addition to the common variables (e.g., `fsl`, `users`, `date_of_aux` and `date_of_latest`), the locality-based attack builds on four parameters that are defined in `attack/locality/Locality_script.sh`: 
+**Step 2, configure locality-based attack:** In addition to the common variables (e.g., `fsl`, `users`, `date_of_aux` and `date_of_latest`), the locality-based attack builds on four parameters that are defined in `attack/locality/locality_script.sh`: 
 
 - `u` specifies the number of most frequent chunk pairs to be returned by frequency analysis in initializing the inferred set.
 - `v` specifies the number of most frequent chunk pairs to be returned by frequency analysis in each iteration.
-- `w` specifies the maximum number of ciphertext-plaintext chunk pairs that can be hold by the inferred set.
+- `w` specifies the maximum number of ciphertext-plaintext chunk pairs that can be held by the inferred set.
 - `leakage_rate` specifies the ratio of the number of ciphertext-plaintext chunk pairs known by the adversary to the total number of ciphertext chunks in the latest backup.
 
 
@@ -64,7 +64,7 @@ The locality-based attack exploits chunk locality to improve attack severity. To
 ```
 $ cd attack/locality/ 
 $ make 
-$ ./Locality_script.sh
+$ ./locality_script.sh
 ```
 
 
@@ -77,9 +77,9 @@ To defend the locality-based attack, MinHash encryption derives an encryption ke
 **Step 1, configure pre-requsite components:** copy `util/fs-hasher/` and
 `util/leveldb/` into `defense/minhash/` and compile them respectively.  
 
-**Step 2, configure MinHash encryption:** the MinHash encryption builds on two parameters that are defined in `defense/minhash/K_minhash.cc`:   
+**Step 2, configure MinHash encryption:** the MinHash encryption builds on two parameters that are defined in `defense/minhash/k_minhash.cc`:   
 
-- **Segment Size**: the MinHash implementation uses variable-size segmentation and identifies segment boundary based on chunk fingerprints. By default, we set the average segment size, maximum segment size and minimum segment size at 1MB, 2MB and 512KB, respectively. It is feasible to change segment sizes by modifying macro variables `SEG_SIZE`, `SEG_MIN` and `SEG_MAX`; note that when changing  `SEG_SIZE`, it is needed to adjust the code in line 112, for example if average segment size is 512KB and 2MB, the line of code should be changed as follows. 
+- **Segment size**: the MinHash implementation uses variable-size segmentation and identifies segment boundary based on chunk fingerprints. By default, we set the average segment size, maximum segment size and minimum segment size at 1MB, 2MB and 512KB, respectively. It is feasible to change segment sizes by modifying macro variables `SEG_SIZE`, `SEG_MIN` and `SEG_MAX`; note that when changing  `SEG_SIZE`, it is needed to adjust the code in line 112 of `defense/minhash/k_minhash.cc`, for example if average segment size is 512KB and 2MB, the line of code should be changed as follows. 
 ```
 if (sq_size + size > SEG_MAX || (sq_size >= SEG_MIN && (hash[5] << 3) >> 3 == 0x1f))	// correspond to average segment size of 512KB 
 if (sq_size + size > SEG_MAX || (sq_size >= SEG_MIN && (hash[5] << 1) >> 1 == 0x7f))	// correspond to average segment size of 2MB
@@ -88,13 +88,13 @@ if (sq_size + size > SEG_MAX || (sq_size >= SEG_MIN && (hash[5] << 1) >> 1 == 0x
 - **K**: our implementation supports k-MinHash that derives an encryption key from a random k-minimum fingerprint of a segment. By default, we use MinHash and set `K_MINHASH` by 1.
 
 
-**Step 3, configure locality-based attack:** it is identical to Step 2 of the guideline of locality-based attack, except the variables located are in `defense/minhash/Defense_script.sh`.   
+**Step 3, configure locality-based attack:** it is identical to Step 2 of the guideline of locality-based attack, except the attack variables (e.g., `u`, `v` and `w`) locate  in `defense/minhash/defense_script.sh`.   
 
 **Step 4, run MinHash encryption to defend locality-based attack:** type the following commands to run. 
 ```
 $ cd defense/minhash/
 $ make
-$ ./Defense_script.sh
+$ ./defense_script.sh
 ```
 
 ## Output Formats
@@ -113,5 +113,5 @@ Successfully inferred following chunks:
 ......
 ```
 
-`X` is the number of unique ciphertext chunks in the encryption of the target backup, while `Y` is the number of (unique) chunks that can be successfully inferred by the attacks. The inference rate is computed by `Y/X`, that is slightly affected by the sorting algorithm in frequency analysis. The reason is different sorting algorithms may break tied chunks (that have the same frequency rank) in different ways and lead to (slightly) different results. The `parameters` and `leakage rate` are only available in the simulation and defense of locality-based attack. We output the fingerprints of inferred plaintext chunks  in both attack and  defense simulation.      
+`X` is the number of unique ciphertext chunks in the encryption of the target backup, while `Y` is the number of (unique) chunks that can be successfully inferred by the attacks. The inference rate is computed by `Y/X`, that is slightly affected by the sorting algorithm in frequency analysis. The reason is different sorting algorithms may break tied chunks (that have the same frequency counts) in different ways and lead to (slightly) different results. The `parameters` and `leakage rate` are only available in the simulation of locality-based attack and its defense. We output the fingerprints of inferred plaintext chunks in both attacks and  defense simulation.      
 
