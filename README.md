@@ -6,6 +6,8 @@ Encrypted deduplication seamlessly combines encryption and deduplication to simu
 
 We study how frequency analysis practically affects information leakage in encrypted deduplication storage, from both attack and defense perspectives. We first propose a new inference attack that exploits chunk locality to increase the coverage of inferred chunks. We conduct trace-driven evaluation on a real-world dataset, and show that the new inference attack can infer a significant fraction of plaintext chunks under backup workloads. To protect against frequency analysis, we borrow the idea of existing performance-driven deduplication approaches and consider an encryption scheme called MinHash encryption, which disturbs the frequency rank of ciphertext chunks by encrypting some identical plaintext chunks into multiple distinct ciphertext chunks. Our trace-driven evaluation shows that MinHash encryption effectively mitigates the inference attack, while maintaining high storage efficiency.
 
+The toolkit is used to simulate the attack and defense approaches based on the [fsl trace](http://tracer.filesystems.org) that consists of fslhome snapshots. 
+
 ### Publication
 
 - Jingwei Li, Chuan Qin, Patrick P. C. Lee, Xiaosong Zhang. Information Leakage in Encrypted Deduplication via Frequency Analysis. In Proc. of IEEE/IFIP DSN, 2017.
@@ -34,7 +36,7 @@ simulate the basic attack.
 
 - `fsl` specifies the path of the fsl trace.
 - `users` specifies which users are collectively considered in backups.
-- `date_of_aux` specifies the backups of which dates are separately considered as auxiliary information.
+- `date_of_aux` specifies the backup of which date is considered as auxiliary information.
 - `date_of_latest` specifies the backup of which date is the target for inference.
 
 
@@ -100,9 +102,9 @@ $ ./defense_script.sh
 ## Output Formats
 The output format is shown as follows
 
-```
+```c
 ==========================Attack/Defense==========================
-Auxilliary information: YYYY-MM-DD; 	Target backup: YYYY-MM-DD
+Auxiliary information: YYYY-MM-DD; 	Target backup: YYYY-MM-DD
 [Parameters: (u, v, w) = ...]
 Total number of unique ciphertext chunks: X
 [Leakage rate: ...]
