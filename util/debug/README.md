@@ -1,0 +1,1 @@
+- db_rank outputs chunks in frequency-decreasing order.  
