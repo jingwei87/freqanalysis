@@ -68,9 +68,21 @@ bool container_manager::insert(char *str, int size, char *path)
 
 bool container_manager::loadtonode (char *path, vector<string> &ans, int ID)
 {
-	string fi="",filename="";
+	string fi="",filename(path);
 	ans.clear();
-	while()
+	stringstream stream;
+	stream << ID;
+	fi = stream.str();
+	filename += fi;
+	FILE * fr = fopen (filename.c_str(), "r");
+	assert(fr != NULL)
+	char T[FP_SZIE];
+	while(fscanf(fr, “%s”, T))
+	{
+		string si(T);
+		ans.push_back(T);
+	}
+	return 1;
 }
 
 
