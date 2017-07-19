@@ -1,12 +1,15 @@
 #include "container_manager.h"
 #include <sstream>
+#include <vector>
+#include <cstdio>
+using namespace std;
 int container_manager::init(char *path)
 {
 	string mainfest(path);
 	int flag = -1; 
-	mainfest+="MAINFEST";
+	mainfest += "MAINFEST";
 	FILE *fl = fopen (mainfest.c_str(), "rt");
-	if(fl = NULL)// this is new container
+	if(fl == NULL)// this is new container
 	{
 		fl = fopen (mainfest.c_str(), "w");
 		fprintf(fl, "0\n");
@@ -31,7 +34,7 @@ int container_manager::init(char *path)
 void container_manager::pocessw(char *path)
 {
 	string filename = "", fi = "";
-	char ter;int ee = now_id ;now_id++;
+	int ee = now_id ;now_id++;
 	while(ee != 0)
 	{
 		fi += (char)((ee % 10) + '0');
@@ -40,7 +43,7 @@ void container_manager::pocessw(char *path)
 	int len = fi.length();
 	filename.resize(len);
 	for (int i = 0; i < len ; i++)filename[len - 1 - i] = fi[i];
-	FILE * fw = fopen(filename , "w");
+	FILE * fw = fopen(filename.c_str() , "w");
 	vector<string>::iterator it;
 	for (it = tmp.begin(); it != tmp.end(); it++)
 	{
@@ -60,10 +63,11 @@ bool container_manager::insert(char *str, int size, char *path)
 	string hash(str);
 	if(now_size + size > MAX_SIZE)
 	{
-		pocessw();
+		pocessw(path);
 	}
 	now_size += size;
-	tmp.push(hash);
+	tmp.push_back(hash);
+	return 1;
 }
 
 bool container_manager::loadtonode (char *path, vector<string> &ans, int ID)
@@ -75,9 +79,9 @@ bool container_manager::loadtonode (char *path, vector<string> &ans, int ID)
 	fi = stream.str();
 	filename += fi;
 	FILE * fr = fopen (filename.c_str(), "r");
-	assert(fr != NULL)
-	char T[FP_SZIE];
-	while(fscanf(fr, “%s”, T))
+	if(fr != NULL) return 0;
+	char T[FP_SIZE];
+	while(fscanf(fr, "%s", T))
 	{
 		string si(T);
 		ans.push_back(T);

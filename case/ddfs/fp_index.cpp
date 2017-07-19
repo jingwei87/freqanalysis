@@ -1,5 +1,9 @@
+#include<string>
 #include "fp_index.h"
+
 #define INT_LENGTH 4
+
+using namespace std;
 fpindex::fpindex(const char *path)
 {
 	db = NULL;
@@ -17,12 +21,12 @@ fpindex::~fpindex()//not safe
 
 bool fpindex::insert(char *str, int ID)
 {
-	leveldb::Slice key(str, FP_SZIE);
+	leveldb::Slice key(str, FP_SIZE);
 	leveldb::Status status;
 	string existing_value = "";
 	status = db->Get(leveldb::ReadOptions(), key, &existing_value);
 	
-	if(!status.ok()) renturn 0;
+	if(!status.ok()) return 0;
 
 	leveldb::Slice value((char *)&ID, sizeof(int));
 	status = db->Put(leveldb::WriteOptions(), key, value);
