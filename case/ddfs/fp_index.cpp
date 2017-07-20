@@ -13,21 +13,32 @@ fpindex::fpindex(const char *path)
         status = leveldb::DB::Open(options, path, &db);
 	assert(status.ok());
 }
+fpindex::fpindex()
+{
+        db = NULL;
+}
+void fpindex::ini(const char *path)
+{
+	db = NULL;
+        leveldb::Options options;
+        options.create_if_missing = true;
+        leveldb::Status status;
+        status = leveldb::DB::Open(options, path, &db);
+        assert(status.ok());
+}
 
 fpindex::~fpindex()//not safe
 {
 	db = NULL;
 }
 
-bool fpindex::insert(char *str, int ID)
+int fpindex::insert(char *str, int ID)
 {
 	leveldb::Slice key(str, FP_SIZE);
 	leveldb::Status status;
 	string existing_value = "";
 	status = db->Get(leveldb::ReadOptions(), key, &existing_value);
-	
-	if(!status.ok()) return 0;
-
+	if(status.ok()) return -1;
 	leveldb::Slice value((char *)&ID, sizeof(int));
 	status = db->Put(leveldb::WriteOptions(), key, value);
 	if(status.ok()) return 1;

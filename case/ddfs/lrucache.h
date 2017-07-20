@@ -9,7 +9,7 @@
 #include <cmath>
 #include <string.h>
 #define FP_SIZE 6
-#define HASH_SIZE 1000000
+#define HASH_SIZE 3000000
 struct listnode
 {
 	char hash_key[FP_SIZE];

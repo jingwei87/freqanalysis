@@ -11,7 +11,9 @@ all: lrucache.cpp lrucache.h
 	$(CC) $(CFLAGS) -c container_manager.cpp 
 	$(CC) -o DDFS DDFS.cpp lrucache.o bloom.o fp_index.o container_manager.o $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
 clean:
-	rm lrutester.o 
 	rm lrucache.o
-	rm lrutester
+	rm bloom.o
+	rm DDFS
+	rm fp_index.o
+	rm container_manager.o
 

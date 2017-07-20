@@ -33,8 +33,10 @@ int container_manager::init(char *path)
 
 void container_manager::pocessw(char *path)
 {
-	string filename = "", fi = "";
+	string filename = "", fi = "", tf(path);
 	int ee = now_id ;now_id++;
+	if(ee == 0)fi = "0";
+	else
 	while(ee != 0)
 	{
 		fi += (char)((ee % 10) + '0');
@@ -43,7 +45,8 @@ void container_manager::pocessw(char *path)
 	int len = fi.length();
 	filename.resize(len);
 	for (int i = 0; i < len ; i++)filename[len - 1 - i] = fi[i];
-	FILE * fw = fopen(filename.c_str() , "w");
+	tf += filename;
+	FILE * fw = fopen(tf.c_str() , "w");
 	vector<string>::iterator it;
 	for (it = tmp.begin(); it != tmp.end(); it++)
 	{
@@ -60,7 +63,7 @@ void container_manager::pocessw(char *path)
 }
 bool container_manager::insert(char *str, int size, char *path)
 {
-	string hash(str);
+	string hash(str, FP_SIZE);
 	if(now_size + size > MAX_SIZE)
 	{
 		pocessw(path);
@@ -78,14 +81,20 @@ bool container_manager::loadtonode (char *path, vector<string> &ans, int ID)
 	stream << ID;
 	fi = stream.str();
 	filename += fi;
+//	printf("file:%s\n", filename.c_str());
 	FILE * fr = fopen (filename.c_str(), "r");
-	if(fr != NULL) return 0;
+	if(fr == NULL)
+	{
+		if(ID == now_id){ans.assign(tmp.begin(), tmp.end());return 1;}
+		else return 0;
+	} 
 	char T[FP_SIZE];
-	while(fscanf(fr, "%s", T))
+	while(fscanf(fr, "%s", T) != EOF)
 	{
 		string si(T);
 		ans.push_back(T);
 	}
+	fclose(fr);
 	return 1;
 }
 

@@ -1,5 +1,6 @@
 #include "lrucache.h"
 #include <cstdlib>
+#include <cmath>
 lrucache::lrucache()//constructor
 {
 	head = NULL;
@@ -53,6 +54,7 @@ unsigned long lrucache::str_hash(const char *str)
 		key = key * 5 + *(str + i);
 	}
 	key %= HASH_SIZE;
+	key = abs(key);
 	return key;
 }
 
@@ -111,9 +113,10 @@ bool lrucache::delete_hash(const char *str)
 			if(t->front!= NULL)t->front->next = t-> next;
 			else hash_table[pos] = t-> next;
 			if(t->next != NULL)t->next->front = t-> front;
-			delete t;
+			delete q;
 			return 1;
 		}
+		q = q -> next;
 	}
 	return 0;
 }
@@ -144,7 +147,7 @@ bool lrucache::delete_node(listnode *p)
 	if(t->next != NULL) t->next->front = t->front;
 	else back = t->front;
 	delete_hash(t->hash_key);
-	delete t;
+	delete p;
 	return 1;
 	
 }

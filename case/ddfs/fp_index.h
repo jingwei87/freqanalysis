@@ -1,4 +1,3 @@
-
 #define _FP_INDEX_H
 #include <cstdlib>
 #include <cstdio>
@@ -10,8 +9,10 @@ class fpindex
 {
 	public:
 	fpindex(const char *path);
+	fpindex();
 	~fpindex();
-	bool insert(char *str, int ID);
+	void ini(const char *path);
+	int insert(char *str, int ID);
 	int find(char *str);
 	private:
 	leveldb::DB *db;
