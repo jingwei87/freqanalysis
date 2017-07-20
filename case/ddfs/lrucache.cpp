@@ -45,7 +45,7 @@ void lrucache::set_max_size(int size)
 	max_cache_size = size;
 }
 
-unsigned long lrucache::str_hash(char *str)
+unsigned long lrucache::str_hash(const char *str)
 {
 	unsigned long key = 0 ;
 	for(int i = 0; i < FP_SIZE; i++)
@@ -56,7 +56,7 @@ unsigned long lrucache::str_hash(char *str)
 	return key;
 }
 
-bool lrucache::insert_hash(char *str, listnode *p)
+bool lrucache::insert_hash(const char *str, listnode *p)
 {
 	unsigned long pos = str_hash(str);
 	hashnode * q = hash_table[pos];
@@ -82,7 +82,7 @@ bool lrucache::insert_hash(char *str, listnode *p)
 	}else return 0;
 }
 
-bool lrucache::find_hash(char *str, listnode * &result)
+bool lrucache::find_hash(const char *str, listnode * &result)
 {
 	result = NULL;
 	unsigned long pos = str_hash(str);
@@ -99,7 +99,7 @@ bool lrucache::find_hash(char *str, listnode * &result)
 }
 
 
-bool lrucache::delete_hash(char *str)
+bool lrucache::delete_hash(const char *str)
 {
 	unsigned long pos = str_hash(str);
 	hashnode *q = hash_table[pos];
@@ -118,7 +118,7 @@ bool lrucache::delete_hash(char *str)
 	return 0;
 }
 
-bool lrucache::add_node_to_head(char *str)
+bool lrucache::add_node_to_head(const char *str)
 {
 	listnode *q = new listnode;
 	if(q == NULL)return 0;
@@ -149,12 +149,12 @@ bool lrucache::delete_node(listnode *p)
 	
 }
 
-bool lrucache::putdata(char *str)
+bool lrucache::putdata(const char *str)
 {
 	return add_node_to_head(str);
 }
 
-bool lrucache::find(char *str)
+bool lrucache::find(const char *str)
 {
 	listnode *t = NULL;
 	bool flag = find_hash(str, t);

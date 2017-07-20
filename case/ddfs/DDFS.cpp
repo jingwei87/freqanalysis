@@ -34,7 +34,7 @@ void punique(char * key, int chunk_size)
 	bloom_add(BLM, key, FP_SIZE);
 	LPC.putdata(key);
 	CMR.insert(key, chunk_size, container_path);
-	FPI.insert(key, CMP.now_id);
+	FPI.insert(key, CMR.now_id);
 }
 void read_hashes(FILE *fp) 
 {
@@ -66,7 +66,7 @@ void read_hashes(FILE *fp)
                 }
 		int chunk_size = atoi((const char*)item);
 		//Find it in LPC
-		if(LPC.find())
+		if(LPC.find(hash))
 		{
 			//----dup it ------------
 			lpc_q_amount ++ ; lpc_q_success ++;
@@ -86,7 +86,7 @@ void read_hashes(FILE *fp)
 				}else// dup it & load container
 				{
 					vector <string> conti;
-					bool flag = loadtonode(container_path, conti, FPID);
+					bool flag = CMR.loadtonode(container_path, conti, FPID);
 					vector<string>::iterator it;
 					for(it = conti.begin(); it!= conti.end(); it++)
 					{
@@ -96,14 +96,14 @@ void read_hashes(FILE *fp)
 			}
 		}
 		
-		
+	}		
 }
 int main(int arg, char *argv[])
 {
 	container_path = argv[1];
 	index_path = argv[2];
 	sys_ini(index_path, container_path);
-	FILE * fp =feopen(argv[3], "r");
+	FILE * fp =fopen(argv[3], "r");
 	if(fp == NULL){printf("OPen hash file failed!!!!\n");return 1;}
 	read_hashes(fp);
 	
