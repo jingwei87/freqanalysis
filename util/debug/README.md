@@ -1,1 +1,2 @@
-- db_rank outputs chunks in frequency-decreasing order.  
+- db_rank inputs frequency associate array and, outputs chunks in frequency-decreasing order.  
+- lr_checker inputs chunk fingerprint and left (right) neighboring associate array, and outputs left (right) chunks in frequency-decreasing order.  
