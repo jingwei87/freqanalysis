@@ -150,7 +150,7 @@ int main (int argc, char *argv[])
 	assert(fp != NULL);
 	init_relate("./ground-truth/");
 	read_hashes(fp);
-
+	process_seg();
 	fclose(fp);
 	return 0;
 }

@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
 	printf("Chunk Hash\t\t\tChunk Size (bytes)\tCompression Ratio (tenth)\n");
 	assert(fp != NULL);
 	read_hashes(fp);
-
+	process_seg();
 	fclose(fp);
 	return 0;
 }
