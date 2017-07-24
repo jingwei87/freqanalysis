@@ -387,7 +387,7 @@ void main_loop()
 		q_t.pop();
 		involve ++;
 	}
-	printf("Correct inferences: %lu\nInference rate: %lf%%\n", correct, (double)((double)correct/total)*100.0);
+	printf("Correct inferences: %lu\nInference rate: %lf%%\n", correct, (double)((double)(correct + common - leak)/total)*100.0);
 }
 
 int main (int argc, char *argv[])
