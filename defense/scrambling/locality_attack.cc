@@ -118,7 +118,7 @@ void stat_db()
 		}
 	}
 
-	printf("unique chunk: %lu\nleak count: %lu\nenqueue count: %lu\n", total, common, leak);
+	printf("Total number of unique ciphertext chunks: %lu\nLeakage rate: %lf%%\n", total,(double)(LEAK_RATE * 100.0));
 }
 
 void print_fp(node a)
@@ -256,25 +256,28 @@ void db_insert(leveldb::DB* db, uint64_t k)
 	}	
 
 }
-
+vector <node>ansq;
 void main_loop()
 {
-
+	ansq.clear();
 	stack<node> tmp;
 	stack<node> omp;
-
 	if(LEAK_RATE == 0)
 	{
+		db_insert(origin, INIT);
 		while (!pq.empty())//inverting chunk sequence (i.e., sort u-frequent chunks by frequency) 
-		{	
+		{
 			tmp.push(pq.top());
 			pq.pop();
 		}
 		while (!tmp.empty())//inserting into a queue
 		{
 			q_o.push(tmp.top());
+			
 			tmp.pop();
 		}
+
+		db_insert(target, INIT);
 		while (!pq.empty())//inverting the sequence (i.e., sort u-frequent chunks by frequency) 
 		{
 			tmp.push(pq.top());
@@ -297,7 +300,11 @@ void main_loop()
 	// MAIN LOOP
 	while(!q_o.empty() && !q_t.empty())
 	{
-		if(memcmp(q_o.front().key, q_t.front().key, FP_SIZE) == 0) correct++;
+		if(memcmp(q_o.front().key, q_t.front().key, FP_SIZE) == 0) 
+		{
+			ansq.push_back(q_o.front());
+			correct++;
+		}
 
 		// clear
 		while(!pq.empty()) pq.pop();
@@ -380,7 +387,8 @@ void main_loop()
 		q_t.pop();
 		involve ++;
 	}
-	printf("correct %lu\ninvolve chunk %lu\n", correct, involve);
+	printf("Leaked chunks:%lu\nLeaked chunks appearing in auxiliary information:%lu\n", common, leak);
+	printf("Inferred chunks: %lu\nInference rate: %lf%%\n", correct + common -leak, (double)((double)(correct + common - leak)/total)*100.0);
 }
 
 int main (int argc, char *argv[])
@@ -392,7 +400,7 @@ int main (int argc, char *argv[])
 	init_db(argv[9], 21);// refer to target L_db
 	init_db(argv[10], 22);// refer to target R_db
 
-	init_db("./uniq-db/", 3);
+	init_db("./inference-db/", 3);
 	
 	INIT = atoi(argv[1]);	// u
 	TH_K = atoi(argv[2]);	// v
@@ -402,6 +410,15 @@ int main (int argc, char *argv[])
 
 	stat_db();
 	main_loop();
-
+	printf("\nSuccessfully inferred following chunks:\n");
+	while(!ansq.empty())
+        {
+                node tmp = ansq.back();
+                printf("%.2hhx",tmp.key[0]);
+                for (int i = 1;i < FP_SIZE; i++)
+                        printf(":%.2hhx", tmp.key[i]);
+                printf("\n");
+                ansq.pop_back();
+        }
 	return 0;
 }

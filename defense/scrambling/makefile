@@ -9,9 +9,9 @@ all: Locality_Attack
 Locality_Attack: ./Locality_Attack.cc
 	$(shell ! test -d "dbs" && mkdir dbs)
 	$(shell ! test -d "tmp" && mkdir tmp)
-	$(CC) $(CFLAGS) -o Scrambling Scrambling.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
-	$(CC) $(CFLAGS) -o Attack Locality_Attack.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
-	$(CC) $(CFLAGS) -o Count Locality_Count.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
+	$(CC) $(CFLAGS) -o scrambling scrambling.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
+	$(CC) $(CFLAGS) -o attack locality_attack.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
+	$(CC) $(CFLAGS) -o count locality_count.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
  
 clean:
 	@rm -f Scrambling
