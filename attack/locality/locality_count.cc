@@ -87,8 +87,8 @@ void read_hashes(FILE *fp)
 			if(status.IsNotFound())
 				count = 1;
 			else
-				printf("There is %s\n", status.ToString.c_str());
-	//	}char count_buf[32];
+				printf("There is %s\n", status.ToString().c_str());
+		}//char count_buf[32];
 		//memset(count_buf, 0, 32);
 		//sprintf(count_buf, "%lu", count);
 		string count_buf;
@@ -149,7 +149,7 @@ void read_hashes(FILE *fp)
 					uint64_t i_v = 1;
 					i_str.assign((char*)&i_v, sizeof(uint64_t));
 					existing_value += i_str;
-				}else printf("some error:%s\n", ststus.ToString().c_str());
+				}else printf("some error:%s\n", status.ToString().c_str());
 			}
 
 			leveldb::Slice current(existing_value.c_str(), existing_value.size());
