@@ -114,7 +114,8 @@ void stat_db()
 				q_t.push(entry_t);
 
 				leak ++;		
-			}			
+			}else
+			if(!status.IsNotFound())printf("%s\n", status.ToString().c_str());
 		}
 	}
 
@@ -178,7 +179,8 @@ void left_insert(int type, char* fp, uint64_t k)
 
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
-	}
+	}else
+	if(!status.IsNotFound())printf("%s\n", status.ToString().c_str());
 }
 
 void right_insert(int type, char* fp, uint64_t k)
@@ -226,7 +228,8 @@ void right_insert(int type, char* fp, uint64_t k)
 
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
-	}
+	}else
+	if(!status.IsNotFound())printf("%s\n", status.ToString().c_str());
 
 }
 
