@@ -23,6 +23,10 @@ uint64_t lpc_q_amount = 0, lpc_q_success = 0, lpc_q_fail = 0;
 uint64_t bloom_q_fail = 0;
 uint64_t fpi_q_amount = 0, load_time = 0;
 uint64_t unique_amount = 0;
+uint64_t storage_access = 0;
+uint64_t index_access = 0;
+uint64_t loading_access = 0;
+uint64_t update_access = 0;
 void sys_ini(char * path1, char *path2)
 {
 	BLM = new bloom;
@@ -33,10 +37,11 @@ void sys_ini(char * path1, char *path2)
 void punique(char * key, int chunk_size)
 {
 	bloom_add(BLM, key, FP_SIZE);
-	LPC.putdata(key);
+	// LPC.putdata(key);  do not need to cache unique chunks
 	CMR.insert(key, chunk_size, container_path);
 	FPI.insert(key, CMR.now_id);
-	printf("syscheck%lld\t%lld\n", unique_amount,lpc_q_amount);
+	update_access++;	// increment update_access for accessing index
+	// printf("syscheck%lu\t%lu\n", unique_amount,lpc_q_amount);
 }
 void read_hashes(FILE *fp) 
 {
@@ -82,6 +87,7 @@ void read_hashes(FILE *fp)
 			{
 				fpi_q_amount++;
 				int FPID = FPI.find(hash);
+				index_access++;		// increment index_access for querying index
 				if(FPID == -1) //this is a unique_chunk
 				{
 					unique_amount ++;
@@ -90,6 +96,7 @@ void read_hashes(FILE *fp)
 				{
 					//printf("n:%dL:%d\n", CMR.now_id, FPID);
 					load_time ++ ;
+					loading_access++;	// increment loading_access for loading metadata
 					vector <string> conti;
 					bool flag = CMR.loadtonode(container_path, conti, FPID);
 					if(flag == 0){printf("load failed\n");exit(1);}
@@ -103,6 +110,8 @@ void read_hashes(FILE *fp)
 			}
 		}	
 	}		
+	CMR.pocessw(container_path);	// push in-memory container into disk
+	storage_access = CMR.now_id;	// storage_access is ID of last container
 }
 int main(int arg, char *argv[])
 {
@@ -115,11 +124,15 @@ int main(int arg, char *argv[])
 	char hash0[FP_SIZE];
 	memset(hash0, 0 ,FP_SZIE);
 	CMR.insert(hash0, 4*1024*1024+1 , container_path);	
-	printf("Total chunk:%lld\n" , lpc_q_amount);
-	printf("dup with LPC:%lld\n", lpc_q_success);
-	printf("unique chunk:%lld\n", unique_amount);
-	printf("find new chunk with BLOOM:%lld\n", bloom_q_fail);
-	printf("load container time:%lld\n",load_time);
+//	printf("Total chunk:%lld\n" , lpc_q_amount);
+//	printf("dup with LPC:%lld\n", lpc_q_success);
+//	printf("unique chunk:%lld\n", unique_amount);
+//	printf("find new chunk with BLOOM:%lld\n", bloom_q_fail);
+//	printf("load container time:%lld\n",load_time);
+	printf("Storage access: %lu\n", storage_access);
+	printf("Index access: %lu\n", index_access);
+	printf("Update access: %lu\n", update_access);
+	printf("Loading access: %lu\n", loading_access);
 
 	return 0;
 }
