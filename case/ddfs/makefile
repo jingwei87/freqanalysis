@@ -6,9 +6,9 @@ INCLUDES =-I./leveldb/include/
 
 all: lrucache.cpp lrucache.h 
 	$(shell ! test -d "tmp" && mkdir tmp)
+	$(shell ! test -d "conf" && mkdir conf)
 	$(shell ! test -d "container" && mkdir container)
 	$(shell ! test -d "index" && mkdir index)
-	$(shell ! test -d "result" && mkdir result)
 	$(CC) -c lrucache.cpp
 	$(CC) -c bloom.c
 	$(CC) $(CFLAGS) -c fp_index.cpp $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)

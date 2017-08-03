@@ -14,14 +14,30 @@ bool lrucache::init_conf(string path){
 	
 	fstream conf;
 	conf.open(path.c_str());
+	uint64_t cnt = 0;
 	if(conf.is_open()){
 		string temp;
-		while(conf.peek()!=EOF){
+		while(getline(conf,temp)){
 
-			conf>>temp;
-			add_node_to_head(temp.c_str());
+			string data;
+			for(int i = 0; i < FP_SIZE; i++){
+				char tmp;
+				int sum = 0;
+				for(int j = 0; j < 8; j++){
+					if(temp[(i*8)+j] == '1'){
+						sum  += pow(2,(7-j));
+					}
+				}
+				tmp = (char)sum;
+				data += tmp;
+			}
+			//cout<<data<<endl;
+			if(add_node_to_head(data.c_str())){
+				cnt++;
+			}
 		}
 		conf.close();
+		cout<<"LPC data read in num: "<<cnt<<endl;
 		return true;		
 	}
 	else{
@@ -35,6 +51,8 @@ bool lrucache::output_conf(){
 	
 	fstream conf;
 	conf.open("./conf/LCPconf", ios::out);
+
+	//char temp[FP_SIZE];
 	uint64_t cnt = 0;
 
 	listnode *p = new listnode;
@@ -48,12 +66,23 @@ bool lrucache::output_conf(){
 		}
 		else{
 			p = hash_table[i]->list_pos;
-			string str(p->hash_key);
-			conf<<str<<endl;
+			for(int k = 0; k < FP_SIZE; k++){
+        		for(int j = 7; j >= 0; j--){
+
+					if((p->hash_key[k] & 1<<j) != 0){
+						conf<<"1";
+					}
+					else{
+						conf<<"0";
+					}
+				}
+    		}
+			conf<<endl;
 			cnt++;
 		}
 	}
-	cout<<"LCP data write num: "<<cnt<<endl;
+	cout<<"LPC data write num: "<<cnt<<endl;
+	
 	conf.close();
 	if(cnt == 0){
 		return false;
@@ -62,6 +91,7 @@ bool lrucache::output_conf(){
 		return true;
 	}
 }
+
 //======================================
 lrucache::lrucache(int size)
 {

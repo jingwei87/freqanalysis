@@ -27,15 +27,15 @@ uint64_t storage_access = 0;
 uint64_t index_access = 0;
 uint64_t loading_access = 0;
 uint64_t update_access = 0;
-void sys_ini(char * path1, char *path2)
-{
+void sys_ini(char * path1, char *path2){
+
 	BLM = new bloom;
 	bloom_init(BLM, BLOOM_lenth, ERROR);
 	bloom_init_conf(BLM); // init with conf
 	CMR.init(path1);
 	FPI.ini(path2);
 	LPC.init_conf("./conf/LCPconf"); //iniit with conf data
-	printf("load over\n");
+	//printf("load over\n");
 	
 }
 void punique(char * key, int chunk_size)
@@ -59,12 +59,9 @@ void read_hashes(FILE *fp) {
         if (strpbrk(read_buffer, "Chunk")) {
             continue;
         }
-
         // a new chunk
         char hash[FP_SIZE];
 		memset(hash, 0, FP_SIZE);
-
-
         // store chunk hash and size
         item = strtok(read_buffer, ":\t\n ");
     	int idx = 0;
@@ -117,7 +114,6 @@ void read_hashes(FILE *fp) {
 	CMR.pocessw(container_path);	// push in-memory container into disk
 	storage_access = CMR.now_id;	// storage_access is ID of last container
 	bloom_conf_out(BLM); //bloom output conf
-
 }
 int main(int arg, char *argv[])
 {
@@ -128,8 +124,7 @@ int main(int arg, char *argv[])
 	if(fp == NULL){printf("OPen hash file failed!!!!\n");return 1;}
 
 	read_hashes(fp);
-
-	cout<<LPC.output_conf()<<endl; // LPC output
+	LPC.output_conf(); // LPC output
 	//bloom_print(BLM);
 
 	char hash0[FP_SIZE];
