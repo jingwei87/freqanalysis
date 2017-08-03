@@ -13,7 +13,8 @@
 #define _BLOOM_H
 
 #include <stdint.h>
-
+#include <bits/stdc++.h>
+using namespace std;
 /** ***************************************************************************
  * Structure to keep track of one bloom filter.  Caller needs to
  * allocate this and pass it to the functions below. First call for
@@ -131,5 +132,12 @@ void bloom_print(struct bloom * bloom);
  *
  */
 void bloom_free(struct bloom * bloom);
+
+
+//new===========================================
+//output & load 
+bool bloom_init_conf(struct bloom * bloom);
+bool bloom_conf_out(struct bloom * bloom);
+
 
 #endif

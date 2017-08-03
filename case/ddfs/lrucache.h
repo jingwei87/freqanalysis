@@ -8,6 +8,9 @@
 #include <cstdio>
 #include <cmath>
 #include <string.h>
+#include <bits/stdc++.h>
+
+using namespace std;
 #define FP_SIZE 6
 #define HASH_SIZE 3000000
 struct listnode
@@ -30,6 +33,10 @@ class lrucache
 		lrucache();// Constructor
 		lrucache(int size);// Constructor with size
 		~lrucache();
+		//new======================
+		bool init_conf(string path); // load conf
+		bool output_conf(); // out put conf
+		//========================
 		void set_max_size(int size);
 		bool putdata(const char *str);//put a sting into cache, with a ruturn 1 when inserting success;
 		bool find(const char *str);//find a strnig in cache, with 1 when find it;

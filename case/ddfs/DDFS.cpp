@@ -31,8 +31,12 @@ void sys_ini(char * path1, char *path2)
 {
 	BLM = new bloom;
 	bloom_init(BLM, BLOOM_lenth, ERROR);
+	bloom_init_conf(BLM); // init with conf
 	CMR.init(path1);
 	FPI.ini(path2);
+	LPC.init_conf("./conf/LCPconf"); //iniit with conf data
+	printf("load over\n");
+	
 }
 void punique(char * key, int chunk_size)
 {
@@ -43,33 +47,32 @@ void punique(char * key, int chunk_size)
 	update_access++;	// increment update_access for accessing index
 	// printf("syscheck%lu\t%lu\n", unique_amount,lpc_q_amount);
 }
-void read_hashes(FILE *fp) 
-{
-        char read_buffer[256];
-        char *item;
-        char last[FP_SIZE];
-        memset(last, 0, FP_SIZE);
-        while (fgets(read_buffer, 256, fp)) 
-	{
+void read_hashes(FILE *fp) {
+
+    char read_buffer[256];
+    char *item;
+    char last[FP_SIZE];
+    memset(last, 0, FP_SIZE);
+    while (fgets(read_buffer, 256, fp)) {
+
                 // skip title line
-                if (strpbrk(read_buffer, "Chunk")) 
-		{
-                        continue;
-                }
+        if (strpbrk(read_buffer, "Chunk")) {
+            continue;
+        }
 
-                // a new chunk
-                char hash[FP_SIZE];
-                memset(hash, 0, FP_SIZE);
+        // a new chunk
+        char hash[FP_SIZE];
+		memset(hash, 0, FP_SIZE);
 
 
-                // store chunk hash and size
-                item = strtok(read_buffer, ":\t\n ");
-                int idx = 0;
-                while (item != NULL && idx < FP_SIZE)
-		{
-                        hash[idx++] = strtol(item, NULL, 16);
-                        item = strtok(NULL, ":\t\n");
-                }
+        // store chunk hash and size
+        item = strtok(read_buffer, ":\t\n ");
+    	int idx = 0;
+        while (item != NULL && idx < FP_SIZE){
+
+            hash[idx++] = strtol(item, NULL, 16);
+            item = strtok(NULL, ":\t\n");
+        }
 		int chunk_size = atoi((const char*)item);
 		//Find it in LPC
 		lpc_q_amount ++ ;
@@ -81,7 +84,8 @@ void read_hashes(FILE *fp)
 		{
 			if(bloom_check(BLM, hash, FP_SIZE) == 0) //this is a unique_chunk
 			{
-				unique_amount ++ ;bloom_q_fail ++;
+				unique_amount ++ ;
+				bloom_q_fail ++;
 				punique(hash, chunk_size);
 			}else
 			{
@@ -112,6 +116,8 @@ void read_hashes(FILE *fp)
 	}		
 	CMR.pocessw(container_path);	// push in-memory container into disk
 	storage_access = CMR.now_id;	// storage_access is ID of last container
+	bloom_conf_out(BLM); //bloom output conf
+
 }
 int main(int arg, char *argv[])
 {
@@ -120,7 +126,12 @@ int main(int arg, char *argv[])
 	sys_ini(container_path, index_path);
 	FILE * fp =fopen(argv[3], "r");
 	if(fp == NULL){printf("OPen hash file failed!!!!\n");return 1;}
+
 	read_hashes(fp);
+
+	cout<<LPC.output_conf()<<endl; // LPC output
+	//bloom_print(BLM);
+
 	char hash0[FP_SIZE];
 	memset(hash0, 0 ,FP_SZIE);
 	CMR.insert(hash0, 4*1024*1024+1 , container_path);	
@@ -133,6 +144,7 @@ int main(int arg, char *argv[])
 	printf("Index access: %lu\n", index_access);
 	printf("Update access: %lu\n", update_access);
 	printf("Loading access: %lu\n", loading_access);
-
+	
+	
 	return 0;
 }

@@ -9,7 +9,60 @@ lrucache::lrucache()//constructor
 	now_cache_size = 0;
 	for(int i = 0 ; i < HASH_SIZE ; i++)hash_table[i] = NULL;
 }
+//new=======================
+bool lrucache::init_conf(string path){
+	
+	fstream conf;
+	conf.open(path.c_str());
+	if(conf.is_open()){
+		string temp;
+		while(conf.peek()!=EOF){
 
+			conf>>temp;
+			add_node_to_head(temp.c_str());
+		}
+		conf.close();
+		return true;		
+	}
+	else{
+		conf.close();
+		return false;
+	}
+	
+}
+
+bool lrucache::output_conf(){
+	
+	fstream conf;
+	conf.open("./conf/LCPconf", ios::out);
+	uint64_t cnt = 0;
+
+	listnode *p = new listnode;
+
+	for (uint64_t i = 0; i < HASH_SIZE; i++) {
+
+		hashnode *h = new hashnode;
+		h = hash_table[i];
+		if(h == NULL){
+			continue;
+		}
+		else{
+			p = hash_table[i]->list_pos;
+			string str(p->hash_key);
+			conf<<str<<endl;
+			cnt++;
+		}
+	}
+	cout<<"LCP data write num: "<<cnt<<endl;
+	conf.close();
+	if(cnt == 0){
+		return false;
+	}
+	else{
+		return true;
+	}
+}
+//======================================
 lrucache::lrucache(int size)
 {
 	head = NULL;
@@ -149,7 +202,6 @@ bool lrucache::delete_node(listnode *p)
 	delete_hash(t->hash_key);
 	delete p;
 	return 1;
-	
 }
 
 bool lrucache::putdata(const char *str)

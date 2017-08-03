@@ -9,6 +9,7 @@
  * Refer to bloom.h for documentation on the public interfaces.
  */
 
+
 #include <fcntl.h>
 #include <math.h>
 #include <stdio.h>
@@ -18,9 +19,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <math.h>
-
+#include <bits/stdc++.h>
+#include <string>
 #include "bloom.h"
-
 
 static int bloom_check_add(struct bloom * bloom,
                            const void * buffer, int len, int add)
@@ -38,13 +39,11 @@ static int bloom_check_add(struct bloom * bloom,
   register unsigned int byte;
   register unsigned int mask;
   register unsigned char c;
-
   for (i = 0; i < bloom->hashes; i++) {
     x = (a + i*b) % bloom->bits;
     byte = x >> 3;
     c = bloom->bf[byte];        // expensive memory access
     mask = 1 << (x % 8);
-
     if (c & mask) {
       hits++;
     } else {
@@ -53,15 +52,42 @@ static int bloom_check_add(struct bloom * bloom,
       }
     }
   }
-
   if (hits == bloom->hashes) {
-    return 1;                   // 1 == element already in (or collision)
+   		return 1;                   // 1 == element already in (or collision)
   }
-
   return 0;
 }
+//new===============================================================
+// load old data
+bool bloom_init_conf(struct bloom * bloom){
 
-
+	std::ifstream in("./conf/bloomConf", std::ios::in | std::ios::binary);
+    std::string contents;
+	if (in)
+    {
+        in.seekg(0, std::ios::end);
+        contents.resize(in.tellg());
+        in.seekg(0, std::ios::beg);
+        in.read(&contents[0], contents.size());
+        in.close();
+		    memcpy(bloom->bf,(unsigned char*)contents.c_str(),contents.size());
+        return true;
+    }
+	return false;
+}
+//output data 
+bool bloom_conf_out(struct bloom * bloom){
+	fstream BLM;
+	BLM.open("./conf/bloomConf", ios::out);
+	if(!BLM.is_open()){
+		cout<<"creat file faile"<<endl;
+    return false;
+	}
+	BLM<<bloom->bf;
+	BLM.close();
+  return true;
+}
+//===================================================================
 int bloom_init(struct bloom * bloom, int entries, double error)
 {
   bloom->ready = 0;
@@ -87,20 +113,19 @@ int bloom_init(struct bloom * bloom, int entries, double error)
   }
 
   bloom->hashes = (int64_t)ceil(0.693147180559945 * bloom->bpe);  // ln(2)
-
+  bloom->ready = 1;
   bloom->bf = (unsigned char *)calloc(bloom->bytes, sizeof(unsigned char));
   if (bloom->bf == NULL) {
     return 1;
   }
 
-  bloom->ready = 1;
   return 0;
 }
 
 
 int bloom_check(struct bloom * bloom, const void * buffer, int len)
 {
-  return bloom_check_add(bloom, buffer, len, 0);
+  	return bloom_check_add(bloom, buffer, len, 0);
 }
 
 
@@ -112,6 +137,7 @@ int bloom_add(struct bloom * bloom, const void * buffer, int len)
 
 void bloom_print(struct bloom * bloom)
 {
+
   (void)printf("bloom at %p\n", (void *)bloom);
   (void)printf(" ->entries = %ld\n", bloom->entries);
   (void)printf(" ->error = %f\n", bloom->error);
@@ -119,7 +145,11 @@ void bloom_print(struct bloom * bloom)
   (void)printf(" ->bits per elem = %f\n", bloom->bpe);
   (void)printf(" ->bytes = %ld\n", bloom->bytes);
   (void)printf(" ->hash functions = %ld\n", bloom->hashes);
+  (void)printf(" ->bf = %s\n", bloom->bf);
+  (void)printf(" ->ready = %ld\n", bloom->ready);
+
 }
+
 
 
 void bloom_free(struct bloom * bloom)
