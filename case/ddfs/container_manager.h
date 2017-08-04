@@ -15,7 +15,7 @@ class container_manager
 	bool insert(char *str,int size,char *path);
 	int init(char *path);
 	bool loadtonode(char *path, vector<string> &ans, int ID);
-	void pocessw(char *path);
+	bool pocessw(char *path);
 	int now_id;
 	private:
 	string paths;

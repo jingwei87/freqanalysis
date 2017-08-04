@@ -236,7 +236,15 @@ bool lrucache::delete_node(listnode *p)
 
 bool lrucache::putdata(const char *str)
 {
-	return add_node_to_head(str);
+	if(find(str)){
+		
+		return false;
+	}
+	else{
+		//cout<<"flag"<<endl;
+		return add_node_to_head(str);
+	}
+	
 }
 
 bool lrucache::find(const char *str)

@@ -2,6 +2,7 @@
 #include <sstream>
 #include <vector>
 #include <cstdio>
+#include <bits/stdc++.h>
 using namespace std;
 int container_manager::init(char *path)
 {
@@ -31,8 +32,11 @@ int container_manager::init(char *path)
 	return flag;
 }
 
-void container_manager::pocessw(char *path)
+bool container_manager::pocessw(char *path)
 {
+	if(tmp.empty()){
+		return false;
+	}
 	string filename = "", fi = "", tf(path);
 	int ee = now_id ;now_id++;
 	if(ee == 0)fi = "0";
@@ -50,16 +54,29 @@ void container_manager::pocessw(char *path)
 	vector<string>::iterator it;
 	for (it = tmp.begin(); it != tmp.end(); it++)
 	{
-		fprintf(fw,"%s\n", it->c_str());
+		string temp(it->c_str());
+		for(int k = 0; k < FP_SIZE; k++){
+        	for(int j = 7; j >= 0; j--){
+
+					if((temp[k] & 1<<j) != 0){
+						fprintf(fw,"1");
+					}
+					else{
+						fprintf(fw,"0");
+					}
+			}
+    	}
+		fprintf(fw,"\n");
 	}
 	tmp.clear();
 	now_size = 0;
 	fclose(fw);
 	string mainfest(path);
-        mainfest+="MAINFEST";
+    mainfest+="MAINFEST";
 	fw = fopen (mainfest.c_str(), "w");
 	fprintf(fw, "%d\n", now_id);
 	fclose(fw);
+	return true;
 }
 bool container_manager::insert(char *str, int size, char *path)
 {
@@ -82,19 +99,33 @@ bool container_manager::loadtonode (char *path, vector<string> &ans, int ID)
 	fi = stream.str();
 	filename += fi;
 //	printf("file:%s\n", filename.c_str());
-	FILE * fr = fopen (filename.c_str(), "r");
-	if(fr == NULL)
-	{
+	fstream fr;
+	fr.open(filename.c_str());
+	if(!fr.is_open()){
+
 		if(ID == now_id){ans.assign(tmp.begin(), tmp.end());return 1;}
 		else return 0;
 	} 
-	char T[FP_SIZE];
-	while(fscanf(fr, "%s", T) != EOF)
-	{
-		string si(T);
-		ans.push_back(T);
+	else{
+		string temp;
+		while(getline(fr,temp)){
+
+			string data;
+			for(int i = 0; i < FP_SIZE; i++){
+				char tmp;
+				int sum = 0;
+				for(int j = 0; j < 8; j++){
+					if(temp[(i*8)+j] == '1'){
+						sum  += pow(2,(7-j));
+					}
+				}
+				tmp = (char)sum;
+				data += tmp;
+			}
+			ans.push_back(data);
+		}
+		fr.close();
 	}
-	fclose(fr);
 	return 1;
 }
 

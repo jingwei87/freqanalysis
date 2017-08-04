@@ -69,6 +69,13 @@ bool bloom_init_conf(struct bloom * bloom){
         in.read(&contents[0], contents.size());
         in.close();
 		    memcpy(bloom->bf,(unsigned char*)contents.c_str(),contents.size());
+        int cnt = 0;
+        for(int i = 0; i < bloom->bytes; i++){
+          if(bloom->bf[i] == '1'){
+            cnt++;
+          }
+        }
+        cout<<"bloom data read number: "<<cnt<<endl;
         return true;
     }
 	return false;
@@ -83,9 +90,12 @@ bool bloom_conf_out(struct bloom * bloom){
 	}
     int cnt = 0;
   for(int i = 0; i < bloom->bytes; i++){
-    BLM<<bloom->bf[i];
     if(bloom->bf[i] == '1'){
+      BLM<<"1";
       cnt++;
+    }
+    else{
+      BLM<<"0";
     }
   }
   cout<<endl<<"bloom data number: "<<cnt<<endl;

@@ -9,7 +9,8 @@
 
 #define FP_SZIE 6
 #define ERROR 0.5
-#define BLOOM_lenth 2000000
+#define BLOOM_lenth 200000
+
 #define LRU_SIZE 500000
 using namespace std;
 
@@ -43,7 +44,10 @@ void punique(char * key, int chunk_size)
 	bloom_add(BLM, key, FP_SIZE);
 	// LPC.putdata(key);  do not need to cache unique chunks
 	CMR.insert(key, chunk_size, container_path);
-	FPI.insert(key, CMR.now_id);
+	
+	if(FPI.insert(key, CMR.now_id) == 0){
+		cout<<"error"<<endl;
+	}
 	update_access++;	// increment update_access for accessing index
 	// printf("syscheck%lu\t%lu\n", unique_amount,lpc_q_amount);
 }
@@ -53,12 +57,14 @@ void read_hashes(FILE *fp) {
     char *item;
     char last[FP_SIZE];
     memset(last, 0, FP_SIZE);
+	int count = 0,cnt = 0;
     while (fgets(read_buffer, 256, fp)) {
 
-                // skip title line
+    	// skip title line
         if (strpbrk(read_buffer, "Chunk")) {
             continue;
         }
+		
         // a new chunk
         char hash[FP_SIZE];
 		memset(hash, 0, FP_SIZE);
@@ -77,15 +83,22 @@ void read_hashes(FILE *fp) {
 		{
 			//----dup it ------------
 			 lpc_q_success ++;
+			 //cout<<"1";
+			 cnt++;
+			 
 		}else
 		{
 			if(bloom_check(BLM, hash, FP_SIZE) == 0) //this is a unique_chunk
 			{
+				//cout<<"0";
 				unique_amount ++ ;
 				bloom_q_fail ++;
 				punique(hash, chunk_size);
+				cout<<hash<<endl;
+				count++;
 			}else
 			{
+				//cout<<"2";
 				fpi_q_amount++;
 				int FPID = FPI.find(hash);
 				index_access++;		// increment index_access for querying index
@@ -93,6 +106,9 @@ void read_hashes(FILE *fp) {
 				{
 					unique_amount ++;
 					punique(hash, chunk_size);
+					cout<<hash<<endl;
+					count++;
+					//cout<<"flag"<<endl;
 				}else// dup it & load container
 				{
 					//printf("n:%dL:%d\n", CMR.now_id, FPID);
@@ -111,6 +127,7 @@ void read_hashes(FILE *fp) {
 			}
 		}	
 	}		
+	//cout<<cnt<<" "<<count<<endl;
 	CMR.pocessw(container_path);	// push in-memory container into disk
 	storage_access = CMR.now_id;	// storage_access is ID of last container
 	bloom_conf_out(BLM); //bloom output conf
@@ -125,11 +142,7 @@ int main(int arg, char *argv[])
 
 	read_hashes(fp);
 	LPC.output_conf(); // LPC output
-	//bloom_print(BLM);
-
-	char hash0[FP_SIZE];
-	memset(hash0, 0 ,FP_SZIE);
-	CMR.insert(hash0, 4*1024*1024+1 , container_path);	
+	
 //	printf("Total chunk:%lld\n" , lpc_q_amount);
 //	printf("dup with LPC:%lld\n", lpc_q_success);
 //	printf("unique chunk:%lld\n", unique_amount);
