@@ -224,6 +224,7 @@ bool lrucache::add_node_to_head(const char *str)
 bool lrucache::delete_node(listnode *p)
 {
 	listnode *t =p;
+	//for(int i = 0;i < 6; i++)printf("%02hhx:",t->hash_key[i]);printf("\n");
 	if(p == NULL)return 0;
 	if(t->front != NULL) t->front->next = t->next;
 	else head = t->next;
@@ -237,11 +238,7 @@ bool lrucache::delete_node(listnode *p)
 bool lrucache::putdata(const char *str)
 {
 	if(find(str)){
-		listnode * tmp;	
-		find_hash(str, tmp);
-		delete_node(tmp);
-		delete_hash(str);
-		return add_node_to_head(str);
+		return false;
 	}
 	else{
 		//cout<<"flag"<<endl;
