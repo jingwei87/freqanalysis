@@ -156,32 +156,60 @@ const char * bloom_version()
   return MAKESTRING(BLOOM_VERSION);
 }
 // load old data
-bool bloom_init_conf(struct bloom * bloom){
+bool bloom_init_conf(struct bloom * bloom) {
 
-        std::ifstream in("./conf/bloomConf", std::ios::in | std::ios::binary);
-    std::string contents;
-        if (in)
-    {
-        in.seekg(0, std::ios::end);
-        contents.resize(in.tellg());
-        in.seekg(0, std::ios::beg);
-        in.read(&contents[0], contents.size());
-        in.close();
-                    memcpy(bloom->bf,(unsigned char*)contents.c_str(),contents.size());
-        return true;
-    }
-        return false;
+	ifstream in("./conf/bloomConf", std::ios::in | std::ios::binary);
+	string contents;
+	string data;
+	uint64_t cnt = 0;
+	if (in) {
+		in.seekg(0, ios::end);
+		contents.resize(in.tellg());
+		in.seekg(0, ios::beg);
+		in.read(&contents[0], contents.size());
+		uint64_t size_tmp = bloom->bytes;
+		for (uint64_t i = 0; i < size_tmp; i++) {
+			int sum = 0;
+			for(int j = 0; j < 8; j++){
+				if(contents[(i*8)+j] == '1'){
+					cnt++;
+					sum  += pow(2,(7-j));
+				}
+			}
+			char tmp0 = (char)sum;
+			memcpy(bloom->bf + i,&tmp0,sizeof(tmp0));
+		}
+		cout<<"bloom data read number: "<<cnt<<endl;
+		in.close();
+		return true;
+	}
+	in.close();
+	return false;
 }
+
 //output data 
-bool bloom_conf_out(struct bloom * bloom){
-        fstream BLM;
-        BLM.open("./conf/bloomConf", ios::out);
-        if(!BLM.is_open()){
-                cout<<"creat file faile"<<endl;
-    return false;
-        }
-        BLM<<bloom->bf;
-        BLM.close();
-  return true;
-}
+bool bloom_conf_out(struct bloom * bloom) {
 
+	fstream BLM;
+	BLM.open("./conf/bloomConf", ios::out | ios::binary);
+	if (!BLM.is_open()) {
+
+		cout<<"creat file faile"<<endl;
+		return false;
+	}
+	int cnt = 0;
+	for (int i = 0; i < bloom->bytes; i++) {
+        for (int j = 7; j >= 0; j--) {					
+			if ((bloom->bf[i] & 1<<j) != 0) {			
+				BLM<<"1";
+				cnt++;
+			}
+			else {			
+				BLM<<"0";
+			}				
+		}
+    }
+	cout<<endl<<"bloom data write number: "<<cnt<<endl;
+	BLM.close();
+	return true;
+}
