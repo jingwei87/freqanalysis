@@ -1,36 +1,34 @@
 /*
- *  Copyright (c) 2012, Jyri J. Virkki
+ *  Copyright (c) 2012-2017, Jyri J. Virkki
  *  All rights reserved.
  *
  *  This file is under BSD license. See LICENSE file.
- */
-/**
- * @file bloom.h
- * @brief Bloom filter implementation
  */
 
 #ifndef _BLOOM_H
 #define _BLOOM_H
 
-#include <stdint.h>
-#include <bits/stdc++.h>
-using namespace std;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /** ***************************************************************************
  * Structure to keep track of one bloom filter.  Caller needs to
  * allocate this and pass it to the functions below. First call for
  * every struct must be to bloom_init().
  *
  */
-typedef struct bloom
+struct bloom
 {
   // These fields are part of the public interface of this structure.
   // Client code may read these values if desired. Client code MUST NOT
   // modify any of these.
-  int64_t entries;
+  int entries;
   double error;
-  int64_t bits;
-  int64_t bytes;
-  int64_t hashes;
+  int bits;
+  int bytes;
+  int hashes;
 
   // Fields below are private to the implementation. These may go away or
   // change incompatibly at any moment. Client code MUST NOT access or rely
@@ -38,7 +36,7 @@ typedef struct bloom
   double bpe;
   unsigned char * bf;
   int ready;
-} Bloom;
+};
 
 
 /** ***************************************************************************
@@ -58,6 +56,7 @@ typedef struct bloom
  * -----------
  *     bloom   - Pointer to an allocated struct bloom (see above).
  *     entries - The expected number of entries which will be inserted.
+ *               Must be at least 1000 (in practice, likely much larger).
  *     error   - Probability of collision (as long as entries are not
  *               exceeded).
  *
@@ -68,6 +67,14 @@ typedef struct bloom
  *
  */
 int bloom_init(struct bloom * bloom, int entries, double error);
+
+
+/** ***************************************************************************
+ * Deprecated, use bloom_init()
+ *
+ */
+int bloom_init_size(struct bloom * bloom, int entries, double error,
+                    unsigned int cache_size);
 
 
 /** ***************************************************************************
@@ -132,12 +139,19 @@ void bloom_print(struct bloom * bloom);
  *
  */
 void bloom_free(struct bloom * bloom);
-
-
-//new===========================================
-//output & load 
 bool bloom_init_conf(struct bloom * bloom);
 bool bloom_conf_out(struct bloom * bloom);
 
+/** ***************************************************************************
+ * Returns version string compiled into library.
+ *
+ * Return: version string
+ *
+ */
+const char * bloom_version();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

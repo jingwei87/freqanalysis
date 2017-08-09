@@ -94,7 +94,7 @@ void read_hashes(FILE *fp) {
 				unique_amount ++ ;
 				bloom_q_fail ++;
 				punique(hash, chunk_size);
-				cout<<hash<<endl;
+				//cout<<hash<<endl;
 				count++;
 			}else
 			{
@@ -106,7 +106,7 @@ void read_hashes(FILE *fp) {
 				{
 					unique_amount ++;
 					punique(hash, chunk_size);
-					cout<<hash<<endl;
+					//cout<<hash<<endl;
 					count++;
 					//cout<<"flag"<<endl;
 				}else// dup it & load container
