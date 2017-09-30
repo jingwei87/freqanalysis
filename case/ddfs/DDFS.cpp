@@ -20,11 +20,6 @@ container_manager CMR;
 fpindex FPI;
 char * container_path;
 char * index_path;
-uint64_t lpc_q_amount = 0, lpc_q_success = 0, lpc_q_fail = 0;
-uint64_t bloom_q_fail = 0;
-uint64_t fpi_q_amount = 0, load_time = 0;
-uint64_t unique_amount = 0;
-uint64_t storage_access = 0;
 uint64_t index_access = 0;
 uint64_t loading_access = 0;
 uint64_t update_access = 0;
@@ -36,20 +31,15 @@ void sys_ini(char * path1, char *path2){
 	CMR.init(path1);
 	FPI.ini(path2);
 	LPC.init_conf("./conf/LCPconf"); //iniit with conf data
-	//printf("load over\n");
-	
 }
 void punique(char * key, int chunk_size)
 {
 	bloom_add(BLM, key, FP_SIZE);
-	// LPC.putdata(key);  do not need to cache unique chunks
 	CMR.insert(key, chunk_size, container_path);
-	
 	if(FPI.insert(key, CMR.now_id) == 0){
 		cout<<"error"<<endl;
 	}
 	update_access++;	// increment update_access for accessing index
-	// printf("syscheck%lu\t%lu\n", unique_amount,lpc_q_amount);
 }
 void read_hashes(FILE *fp) {
 
@@ -78,48 +68,32 @@ void read_hashes(FILE *fp) {
         }
 		int chunk_size = atoi((const char*)item);
 		//Find it in LPC
-		lpc_q_amount ++ ;
 		if(LPC.find(hash))
 		{
-			//----dup it ------------
-			 lpc_q_success ++;
-			 //cout<<"1";
 			 cnt++;
 			 
 		}else
 		{
 			if(bloom_check(BLM, hash, FP_SIZE) == 0) //this is a unique_chunk
 			{
-				//cout<<"0";
-				unique_amount ++ ;
-				bloom_q_fail ++;
 				punique(hash, chunk_size);
-				//cout<<hash<<endl;
-				count++;
 			}else
 			{
-				//cout<<"2";
-				fpi_q_amount++;
 				int FPID = FPI.find(hash);
 				index_access++;		// increment index_access for querying index
 				if(FPID == -1) //this is a unique_chunk
 				{
-					unique_amount ++;
 					punique(hash, chunk_size);
-					//cout<<hash<<endl;
 					count++;
-					//cout<<"flag"<<endl;
 				}else// dup it & load container
 				{
-					//printf("n:%dL:%d\n", CMR.now_id, FPID);
-					load_time ++ ;
-					loading_access++;	// increment loading_access for loading metadata
 					vector <string> conti;
 					bool flag = CMR.loadtonode(container_path, conti, FPID);
 					if(flag == 0){printf("load failed\n");exit(1);}
 					vector<string>::iterator it;
 					for(it = conti.begin(); it!= conti.end(); it++)
 					{
+						loading_access++;	// increment loading_access for loading metadata of a chunk
 						LPC.putdata((*it).c_str());
 					}
 					conti.clear();
@@ -127,7 +101,6 @@ void read_hashes(FILE *fp) {
 			}
 		}	
 	}		
-	//cout<<cnt<<" "<<count<<endl;
 	CMR.pocessw(container_path);	// push in-memory container into disk
 	storage_access = CMR.now_id;	// storage_access is ID of last container
 	bloom_conf_out(BLM); //bloom output conf
@@ -143,16 +116,8 @@ int main(int arg, char *argv[])
 	read_hashes(fp);
 	LPC.output_conf(); // LPC output
 	
-//	printf("Total chunk:%lld\n" , lpc_q_amount);
-//	printf("dup with LPC:%lld\n", lpc_q_success);
-//	printf("unique chunk:%lld\n", unique_amount);
-//	printf("find new chunk with BLOOM:%lld\n", bloom_q_fail);
-//	printf("load container time:%lld\n",load_time);
-	printf("Storage access: %lu\n", storage_access);
 	printf("Index access: %lu\n", index_access);
 	printf("Update access: %lu\n", update_access);
 	printf("Loading access: %lu\n", loading_access);
-	
-	
 	return 0;
 }
