@@ -56,19 +56,33 @@ bool lrucache::output_conf(){
 	uint64_t cnt = 0;
 
 	listnode *p = new listnode;
+	for (listnode *p = head; p != NULL; p = p ->next) {
+		for(int k = 0; k < FP_SIZE; k++){
+       			for(int j = 7; j >= 0; j--){
+				if((p->hash_key[k] & 1<<j) != 0){
+					conf<<"1";
+				}
+				else{
+					conf<<"0";
+				}
+			}
+		}
+		conf<<endl;
+		cnt++;
+	}
 
+	/*	
 	for (uint64_t i = 0; i < HASH_SIZE; i++) {
 
-		hashnode *h = new hashnode;
-		h = hash_table[i];
+		hashnode *h = hash_table[i];
 		if(h == NULL){
 			continue;
 		}
 		else{
 			p = hash_table[i]->list_pos;
-			for(int k = 0; k < FP_SIZE; k++){
-        		for(int j = 7; j >= 0; j--){
-
+			while(p!= NULL) {
+				for(int k = 0; k < FP_SIZE; k++){
+        			for(int j = 7; j >= 0; j--){
 					if((p->hash_key[k] & 1<<j) != 0){
 						conf<<"1";
 					}
@@ -76,11 +90,14 @@ bool lrucache::output_conf(){
 						conf<<"0";
 					}
 				}
-    		}
-			conf<<endl;
-			cnt++;
+				}
+				conf<<endl;
+				p = p->next;
+				cnt++;
+    			}
 		}
 	}
+	*/
 	cout<<"LPC data write num: "<<cnt<<endl;
 	
 	conf.close();
