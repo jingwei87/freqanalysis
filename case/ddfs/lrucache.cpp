@@ -229,6 +229,7 @@ bool lrucache::add_node_to_head(const char *str)
 	q->next = head;
 	q->front = NULL;
 	if(head == NULL) back =q;
+	else head->front = q;
 	head = q;
 	insert_hash(str, q);
 	if(now_cache_size < max_cache_size)
