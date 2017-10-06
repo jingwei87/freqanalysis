@@ -189,15 +189,22 @@ bool lrucache::find_hash(const char *str, listnode * &result)
 	result = NULL;
 	unsigned long pos = str_hash(str);
 	hashnode * q = hash_table[pos];
+	bool flag = 0;
 	while(q != NULL)
 	{
 		if(strncmp( q->list_pos->hash_key, str, FP_SIZE) == 0)
 		{
 			result = q->list_pos;
-			return 1;
+			flag = 1;
+			break;
 		}else q = q->next;
 	}
-	return 0;
+	if(flag){
+		delete_node(result);
+		add_node_to_head(str);
+		result = head;
+	}
+	return flag;
 }
 
 
