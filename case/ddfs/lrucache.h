@@ -12,7 +12,7 @@
 
 using namespace std;
 #define FP_SIZE 6
-#define HASH_SIZE 3000000
+#define HASH_SIZE 5000000
 struct listnode
 {
 	char hash_key[FP_SIZE];

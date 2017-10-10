@@ -233,6 +233,8 @@ bool lrucache::add_node_to_head(const char *str)
 	listnode *q = new listnode;
 	if(q == NULL)return 0;
 	for(int i = 0;i < FP_SIZE ;i++)q->hash_key[i] = *(str + i);
+	//string add(str, 6);
+	//cout<<add<<endl;
 	q->next = head;
 	q->front = NULL;
 	if(head == NULL) back =q;
@@ -242,13 +244,14 @@ bool lrucache::add_node_to_head(const char *str)
 	if(now_cache_size < max_cache_size)
 		now_cache_size ++ ; 
 	else
-		delete_node(back);
+		{delete_node(back);now_cache_size++;}
 	return 1;
 }
 
 bool lrucache::delete_node(listnode *p)
 {
 	listnode *t =p;
+	now_cache_size -- ;
 	//for(int i = 0;i < 6; i++)printf("%02hhx:",t->hash_key[i]);printf("\n");
 	if(p == NULL)return 0;
 	if(t->front != NULL) t->front->next = t->next;
