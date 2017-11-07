@@ -115,7 +115,8 @@ void stat_db()
 
 				leak ++;		
 			}else
-			if(!status.IsNotFound())printf("%s\n", status.ToString().c_str());
+			if(!status.IsNotFound())
+			{printf("%s\n", status.ToString().c_str());exit(1);}//leveldb error!
 		}
 	}
 
@@ -180,7 +181,7 @@ void left_insert(int type, char* fp, uint64_t k)
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
 	}else
-	if(!status.IsNotFound())printf("%s\n", status.ToString().c_str());
+	if(!status.IsNotFound()){printf("%s\n", status.ToString().c_str());exit(1);}//leveldb error!
 }
 
 void right_insert(int type, char* fp, uint64_t k)
@@ -229,7 +230,7 @@ void right_insert(int type, char* fp, uint64_t k)
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
 	}else
-	if(!status.IsNotFound())printf("%s\n", status.ToString().c_str());
+	if(!status.IsNotFound()){printf("%s\n", status.ToString().c_str());exit(1);}
 
 }
 
