@@ -15,12 +15,14 @@ all: lrucache.cc lrucache.h
 	$(CC) $(CFLAGS) -c fp_index.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
 	$(CC) $(CFLAGS) -c container_manager.cc 
 	$(CC) -o ddfs ddfs.cc lrucache.o bloom.o fp_index.o container_manager.o MurmurHash2.o $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
+	$(CC) -o combined combined.cc $(INCLUDES) ./leveldb/out-static/libleveldb.a $(LIBS)
 clean:
-	rm lrucache.o
-	rm bloom.o
-	rm ddfs
-	rm fp_index.o
-	rm container_manager.o
+	rm -f lrucache.o
+	rm -f bloom.o
+	rm -f ddfs
+	rm -f fp_index.o
+	rm -f container_manager.o
+	rm -f combined
 	rm -rf tmp/
 	rm -rf container/
 	rm -rf index/
