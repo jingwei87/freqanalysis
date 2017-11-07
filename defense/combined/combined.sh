@@ -23,7 +23,7 @@ for user in ${users[@]}; do
 		tar zxf "${fsl}"/${snapshot}.tar.gz  
 		fs-hasher/hf-stat -h ${snapshot}/${snapshot}.8kb.hash.anon > tmp/${snapshot} 
 		# simulate MinHash encryption
-		./minhash tmp/${snapshot} > tmp/E_${snapshot}
+		./combined tmp/${snapshot} > tmp/E_${snapshot}
 		./count tmp/E_${snapshot} "dbs/F_${date_of_latest}/" "dbs/L_${date_of_latest}/" "dbs/R_${date_of_latest}/"  
 		rm -rf ${snapshot}
 #		rm -rf tmp/${snapshot}
