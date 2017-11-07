@@ -392,7 +392,7 @@ void main_loop()
 		involve ++;
 	}
 	// printf("Leaked chunks:%lu\nLeaked chunks appearing in auxiliary information:%lu\n", common, leak);
-	printf("Inferred chunks: %lu\nInference rate: %lf%%\n", correct + common -leak, (double)((double)(correct + common - leak)/total)*100.0);
+	printf("Correct inferences: %lu\nInference rate: %lf%%\n", correct + common -leak, (double)((double)(correct + common - leak)/total)*100.0);
 }
 
 int main (int argc, char *argv[])
