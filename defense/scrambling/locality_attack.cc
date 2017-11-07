@@ -114,7 +114,9 @@ void stat_db()
 				q_t.push(entry_t);
 
 				leak ++;		
-			}			
+			}else
+			if(!status.IsNotFound())
+			{printf("%s\n", status.ToString().c_str());exit(1);}//leveldb error!
 		}
 	}
 
@@ -178,7 +180,8 @@ void left_insert(int type, char* fp, uint64_t k)
 
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
-	}
+	}else
+	if(!status.IsNotFound()){printf("%s\n", status.ToString().c_str());exit(1);}//leveldb error!
 }
 
 void right_insert(int type, char* fp, uint64_t k)
@@ -226,7 +229,8 @@ void right_insert(int type, char* fp, uint64_t k)
 
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
-	}
+	}else
+	if(!status.IsNotFound()){printf("%s\n", status.ToString().c_str());exit(1);}
 
 }
 
@@ -387,7 +391,7 @@ void main_loop()
 		q_t.pop();
 		involve ++;
 	}
-	printf("Leaked chunks:%lu\nLeaked chunks appearing in auxiliary information:%lu\n", common, leak);
+	// printf("Leaked chunks:%lu\nLeaked chunks appearing in auxiliary information:%lu\n", common, leak);
 	printf("Inferred chunks: %lu\nInference rate: %lf%%\n", correct + common -leak, (double)((double)(correct + common - leak)/total)*100.0);
 }
 

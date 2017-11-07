@@ -1,12 +1,13 @@
-# Information Leakage in Encrypted Deduplication via Frequency Analysis
+# Information Leakage in Encrypted Deduplication via Frequency Analysis: Attacks and Defenses
 
 ## Introduction
 
 Encrypted deduplication seamlessly combines encryption and deduplication to simultaneously achieve both data security and storage efficiency. State-of-the-art encrypted deduplication systems mostly adopt a deterministic encryption approach that encrypts each plaintext chunk with a key derived from the content of the chunk itself, so that identical plaintext chunks are always encrypted into identical ciphertext chunks for deduplication. However, such deterministic encryption inherently reveals the underlying frequency distribution of the original plaintext chunks. This allows an adversary to launch frequency analysis against the resulting ciphertext chunks, and ultimately infer the content of the original plaintext chunks.
 
-We study how frequency analysis practically affects information leakage in encrypted deduplication storage, from both attack and defense perspectives. We first propose a new inference attack that exploits chunk locality to increase the coverage of inferred chunks. We conduct trace-driven evaluation on a real-world dataset, and show that the new inference attack can infer a significant fraction of plaintext chunks under backup workloads. To protect against frequency analysis, we borrow the idea of existing performance-driven deduplication approaches and consider an encryption scheme called MinHash encryption, which disturbs the frequency rank of ciphertext chunks by encrypting some identical plaintext chunks into multiple distinct ciphertext chunks. Our trace-driven evaluation shows that MinHash encryption effectively mitigates the inference attack, while maintaining high storage efficiency.
+We study how frequency analysis practically affects information leakage in encrypted deduplication storage, from both attack and defense perspectives. We first propose a new inference attack that exploits chunk locality to increase the coverage of inferred chunks. We conduct trace-driven evaluation on a real-world dataset, and show that the new inference attack can infer a significant fraction of plaintext chunks under backup workloads. To protect against frequency analysis, we present two defense schemes, namely MinHash encryption and scrambling, which aim to disturb the frequency rank or break the chunk locality of ciphertext workloads. Our trace-driven evaluations show that our combined MinHash encryption and scrambling scheme effectively mitigates the inference attack, while incurring limited  storage and performance overhead.   
+   
 
-The toolkit is used to simulate the attack and defense approaches based on the [fsl trace](http://tracer.filesystems.org) that consists of fslhome snapshots. 
+The toolkit includes the attack and defense implementations against the [FSL dataset](http://tracer.filesystems.org), as well as an deduplication storage prototype based on data domain file system (DDFS).     
 
 ### Publication
 
