@@ -120,12 +120,10 @@ void stat_db()
 				q_t.push(entry_t);
 
 				leak ++;		
-			}else {
-				if(!status.IsNotFound()) {
-					printf("%s\n", status.ToString().c_str());			
-					exit(1);
-				}
-			}
+			}else if(!status.IsNotFound())
+			{
+				printf("1:%s\n", status.ToString().c_str());exit(1);
+			}			
 		}
 	}
 	 printf("Total number of unique ciphertext chunks: %lu\nLeakage rate: %lf%%\n", total,(double)(LEAK_RATE * 100.0));
@@ -177,12 +175,10 @@ void left_insert(int type, char* fp, uint64_t k)
 
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
-	}else {
-		if(!status.IsNotFound()) {
-			printf("%s\n", status.ToString().c_str());
-			exit(1);
+	}else if(!status.IsNotFound())
+		{
+			printf("2:%s\n", status.ToString().c_str());exit(1);
 		}
-	}
 }
 //insert right top k-th frequent chunk into pq(original) or pc(target)
 void right_insert(int type, char* fp, uint64_t k)
@@ -230,12 +226,10 @@ void right_insert(int type, char* fp, uint64_t k)
 
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
-	}else {
-		if(!status.IsNotFound()) {
-			printf("%s\n", status.ToString().c_str());
-			exit(1);
+	}else if(!status.IsNotFound())
+		{
+			printf("3:%s\n", status.ToString().c_str());exit(1);
 		}
-	}
 
 }
 
@@ -319,12 +313,8 @@ void main_loop()
 			ansq1.push_back(q_o.front());
 			ansq2.push_back(q_t.front());
 			correct++;
-		}else {
-			if(!cst.IsNotFound()) {
-				printf("%s\n", cst.ToString().c_str());
-				exit(1);
-			}
-		}
+		}else if(!cst.IsNotFound() && !cst.ok())
+			{printf("4:%s\n", cst.ToString().c_str());exit(1);}
 		// clear
 		while(!pq.empty()) pq.pop();
 		while(!pc.empty()) pc.pop();
@@ -406,7 +396,7 @@ void main_loop()
 		q_t.pop();
 		involve ++;
 	}
-	// printf("Leaked chunks:%lu\nLeaked chunks appearing in auxiliary information:%lu\n", common, leak);
+	printf("Leaked chunks:%lu\nLeaked chunks appearing in auxiliary information:%lu\n", common, leak);
         printf("Inferred chunks: %lu\nInference rate: %lf%%\n", correct + common -leak, (double)((double)(correct + common - leak)/total)*100.0);
 }
 
