@@ -120,7 +120,10 @@ void stat_db()
 				q_t.push(entry_t);
 
 				leak ++;		
-			}else if(!status.IsNotFound())printf("%s\n", status.ToString().c_str());			
+			}else if(!status.IsNotFound())
+			{
+				printf("1:%s\n", status.ToString().c_str());exit(1);
+			}			
 		}
 	}
 	 printf("Total number of unique ciphertext chunks: %lu\nLeakage rate: %lf%%\n", total,(double)(LEAK_RATE * 100.0));
@@ -172,7 +175,10 @@ void left_insert(int type, char* fp, uint64_t k)
 
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
-	}else if(!status.IsNotFound())printf("%s\n", status.ToString().c_str());
+	}else if(!status.IsNotFound())
+		{
+			printf("2:%s\n", status.ToString().c_str());exit(1);
+		}
 }
 //insert right top k-th frequent chunk into pq(original) or pc(target)
 void right_insert(int type, char* fp, uint64_t k)
@@ -220,7 +226,10 @@ void right_insert(int type, char* fp, uint64_t k)
 
 			len += (FP_SIZE+sizeof(uint64_t));	
 		}
-	}else if(!status.IsNotFound())printf("%s\n", status.ToString().c_str());
+	}else if(!status.IsNotFound())
+		{
+			printf("3:%s\n", status.ToString().c_str());exit(1);
+		}
 
 }
 
@@ -304,7 +313,8 @@ void main_loop()
 			ansq1.push_back(q_o.front());
 			ansq2.push_back(q_t.front());
 			correct++;
-		}else if(!cst.IsNotFound())printf("%s\n", cst.ToString().c_str());
+		}else if(!cst.IsNotFound() && !cst.ok())
+			{printf("4:%s\n", cst.ToString().c_str());exit(1);}
 		// clear
 		while(!pq.empty()) pq.pop();
 		while(!pc.empty()) pc.pop();
