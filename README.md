@@ -25,26 +25,28 @@ The attack is running under Linux (e.g., Ubuntu 14.04) with a C++ compiler (e.g.
 
 ## Attacks 
 
+Both the basic and the locality-based attacks depend on `fs-hasher` and
+`leveldb`. Before configuring either attack, need to set the pre-requisite
+components by copying `util/fs-hasher/` and `util/leveldb/` into the
+corresponding directory (either `attack/basic/` or `attack/locality/`) and
+compile them respectively.    
+
 ### Basic Attack
 
 The basic attack builds on classical frequency analysis. Follow the steps to
 simulate the basic attack.
 
-**Step 1, configure pre-requsite components:** copy `util/fs-hasher/` and
-`util/leveldb/` into `attack/basic/` and compile them respectively.  
-
-**Step 2, configure basic attack:** modify variables in `attack/basic/basic_script.sh` to adapt expected settings:
+**Step 1, configure basic attack:** modify variables in `attack/basic/basic_script.sh` to adapt expected settings:
 
 - `fsl` specifies the path of the fsl trace.
 - `users` specifies which users are collectively considered in backups.
 - `date_of_aux` specifies the backup of which date is considered as auxiliary information.
 - `date_of_latest` specifies the backup of which date is the target for inference.
 
+**Step 2, run basic attack:** type the following commands to compile and run the basic attack.  
 
-**Step 3, run basic attack:** type the following commands to compile and run the basic attack.  
 ```
-$ cd attack/basic/ 
-$ make 
+$ cd attack/basic/ && make
 $ ./basic_script.sh
 ```
 
@@ -52,35 +54,31 @@ $ ./basic_script.sh
 
 The locality-based attack exploits chunk locality to improve attack severity. To simulate the locality-based attack, follow the steps below.
 
-**Step 1, configure pre-requsite components:** copy `util/fs-hasher/` and
-`util/leveldb/` into `attack/locality/` and compile them respectively.  
-
-**Step 2, configure locality-based attack:** In addition to the common variables (e.g., `fsl`, `users`, `date_of_aux` and `date_of_latest`), the locality-based attack builds on four parameters that are defined in `attack/locality/locality_script.sh`: 
+**Step 1, configure locality-based attack:** In addition to the common variables (e.g., `fsl`, `users`, `date_of_aux` and `date_of_latest`), the locality-based attack builds on four parameters that are defined in `attack/locality/locality_script.sh`: 
 
 - `u` specifies the number of most frequent chunk pairs to be returned by frequency analysis in initializing the inferred set.
 - `v` specifies the number of most frequent chunk pairs to be returned by frequency analysis in each iteration.
 - `w` specifies the maximum number of ciphertext-plaintext chunk pairs that can be held by the inferred set.
 - `leakage_rate` specifies the ratio of the number of ciphertext-plaintext chunk pairs known by the adversary to the total number of ciphertext chunks in the latest backup.
 
+**Step 2, run locality-based attack:** type the following commands to compile and run the locality-based attack.  
 
-**Step 3, run locality-based attack:** type the following commands to compile and run the locality-based attack.  
 ```
-$ cd attack/locality/ 
-$ make 
+$ cd attack/locality/ && make 
 $ ./locality_script.sh
 ```
 
 
-## Defense 
+## Defenses 
+
+We provide the MinHash encryption, the scrambling, and the combination of both to defeat frequency analysis. Like the attacks, all defense schemes depend on `fs-hasher` and `leveldb`. Need to copy `util/fs-hasher/` and `util/leveldb/` into the corresponding directory (either `defense/minhash/`, `defense/scrambling/` or `defense/combined/`) and compile them respectively.    
+ 
 
 ### MinHash Encryption 
 
-To defend the locality-based attack, MinHash encryption derives an encryption key based on the minimum fingerprint over a set (called segment) of adjacent chunks (that are assumed to be with an average size of 8KB), such that some identical plaintext chunks can be encrypted into multiple distinct ciphertext chunks. To simulate the MinHash encryption, follow the steps below.
+MinHash encryption derives an encryption key based on the minimum fingerprint over a set (called segment) of adjacent chunks (that are assumed to be with an average size of 8KB), such that some identical plaintext chunks can be encrypted into multiple distinct ciphertext chunks. To simulate the MinHash encryption, follow the steps below.
 
-**Step 1, configure pre-requsite components:** copy `util/fs-hasher/` and
-`util/leveldb/` into `defense/minhash/` and compile them respectively.  
-
-**Step 2, configure MinHash encryption:** the MinHash encryption builds on two parameters that are defined in `defense/minhash/k_minhash.cc`:   
+**Step 1, configure MinHash encryption:** the MinHash encryption builds on two parameters that are defined in `defense/minhash/k_minhash.cc`:   
 
 - **Segment size**: the MinHash implementation uses variable-size segmentation and identifies segment boundary based on chunk fingerprints. By default, we set the average segment size, maximum segment size and minimum segment size at 1MB, 2MB and 512KB, respectively. It is feasible to change segment sizes by modifying macro variables `SEG_SIZE`, `SEG_MIN` and `SEG_MAX`; note that when changing  `SEG_SIZE`, it is needed to adjust the code in line 112 of `defense/minhash/k_minhash.cc`, for example if average segment size is 512KB and 2MB, the line of code should be changed as follows. 
 ```
@@ -91,17 +89,64 @@ if (sq_size + size > SEG_MAX || (sq_size >= SEG_MIN && (hash[5] << 1) >> 1 == 0x
 - **K**: our implementation supports k-MinHash that derives an encryption key from a random k-minimum fingerprint of a segment. By default, we use MinHash and set `K_MINHASH` by 1.
 
 
-**Step 3, configure locality-based attack:** it is identical to Step 2 of the guideline of locality-based attack, except the attack variables (e.g., `u`, `v` and `w`) locate  in `defense/minhash/defense_script.sh`.   
+**Step 2, configure locality-based attack:** it is identical to Step 1 of the guideline of locality-based attack, except the attack variables (e.g., `u`, `v` and `w`) locate in `defense/minhash/minhash.sh`.   
 
-**Step 4, run MinHash encryption to defend locality-based attack:** type the following commands to run. 
+**Step 3, run MinHash encryption to defend locality-based attack:** type the following commands to compile and run. 
+
 ```
-$ cd defense/minhash/
-$ make
-$ ./defense_script.sh
+$ cd defense/minhash/ && make
+$ ./minhash.sh
 ```
 
-## Output Formats
-The output format is shown as follows
+### Scrambling
+
+Scrambling disturbs the processing sequence of chunks, so as to prevent an adversary from correctly identifying the neighbors of each chunk in the locality-based attack. To simulate the scrambling scheme, follow the steps below.
+
+**Step 1, configure scrambling scheme:** Like MinHash encryption, scrambling works on segment basis, and builds on three parameters of `SEG_SIZE`, `SEG_MIN` and `SEG_MAX` to define variable-size segmentation. It is feasible to follow the Step 1 of the guideline of MinHash encryption to configure these parameters in `defense/scrambling/scrambling.cc`.    
+
+**Step 2, configure locality-based attack:** it is identical to Step 1 of the guideline of locality-based attack, except the attack variables (e.g., `u`, `v` and `w`) locate in `defense/scrambling/scrambling.sh`.   
+
+**Step 3, run scrambling to defend locality-based attack:** type the following commands to compile and run. 
+
+```
+$ cd defense/scrambling/ && make
+$ ./scrambling.sh
+```
+
+### Combined
+
+We also introduce a combined scheme that first scrambles the orders of chunks in each segment, and further encrypts them with MinHash encryption. The guideline of the attack is identical with that of MinHash encryption.
+
+## Prototype
+
+We design and implement a deduplication-based storage prototype based on DDFS. The key design is to store unique chunks in logical order and further exploit chunk locality to accelerate deduplication. Instead of storing actual data, our prototype works on metadata level. You can follow the following steps to evaluate the metadata access overhead of either message-locked encryption (MLE) or our combined scheme based on our prototype.  
+
+Our prototype depends on `leveldb` for the implementation of fingerprint index. Thus, need to copy `util/leveldb/` into the directory `prototype/` and compile it.
+
+
+**Step 1, configure prototype:** the prototype builds on two types of parameters, all of which are defined in `prototype/ddfs.cc`:
+
+- The cache-related parameter is the size `LRU_SIZE` of fingerprint cache. Note that we describe `LRU_SIZE` by the maximum number of fingerprints that the cache can hold.  
+
+- The Bloom filter-related parameters include the maximum number `BLOOM_lenth` of entries in the Bloom filter array and the false positive rate `ERROR` of Bloom filter. 
+
+**Step 2, configure encryption scheme:** we provide the simulation of the MLE and the combined scheme. You can configure the parameters of the combined scheme by modifying `SEG_MIN`, `SEG_MAX`, `SEG_SIZE`, and `K_MINHASH` in `prototype/combined.cc` (see Step 1 of the guideline of MinHash encryption).   
+
+
+**Step 3, run storage simulation:** type the following commands to compile and run.   
+
+```
+$ cd prototype/ && make
+$ ./combined.sh  // run the combined scheme
+$ ./mle.sh  // run the MLE scheme
+```
+
+
+## Outputs 
+
+### Attack/Defense
+
+The output format of attack/defense is shown as follows.
 
 ```c
 ==========================Attack/Defense==========================
@@ -118,3 +163,15 @@ Successfully inferred following chunks:
 
 `X` is the number of unique ciphertext chunks in the encryption of the target backup, while `Y` is the number of (unique) chunks that can be successfully inferred by the attacks. The inference rate is computed by `Y/X`, that is slightly affected by the sorting algorithm in frequency analysis. The reason is different sorting algorithms may break tied chunks (that have the same frequency counts) in different ways and lead to (slightly) different results. The `parameters` and `leakage rate` are only available in the simulation of locality-based attack and its defense. We output the fingerprints of inferred plaintext chunks in both attacks and  defense simulation.      
 
+### Storage Simulation
+
+We output the metadata access overhead in storage simulation in the following format: 
+
+```
+fslhomes-userX-YYYY-MM-DD
+Index access: A
+Update access: B
+Loading access: C
+```
+
+The information elaborates the metadata access overhead of storing user `X`'s backup on the date of `YYYY-MM-DD`. The metadata access overhead includes index access, update access and loading access, all of which are evaluated in the unit of times.
