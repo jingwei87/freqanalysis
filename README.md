@@ -25,6 +25,12 @@ The toolkit is running under Linux (e.g., Ubuntu 14.04) with a C++ compiler (e.g
 
 All components of our toolkit depend on `fs-hasher` and `leveldb`. Before configuring each component (e.g., the attacks, the defenses, and the prototype), need to copy `util/fs-hasher/` and `util/leveldb/` into the corresponding directory (e.g., `attack/basic/`, `attack/locality/`, `defense/minhash/`, `defense/scrambling/`, `defense/combined/`, and `prototype/`) and compile them, respectively.  
 
+For some machines, you need to change the maximum number of open files allowed:
+
+```
+$ sudo echo "* hard nofile 65535" >> /etc/security/limits.conf
+$ sudo echo "* soft nofile 65535" >> /etc/security/limits.conf
+```
 
 ## Attacks 
 
