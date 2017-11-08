@@ -28,8 +28,9 @@ All components of our toolkit depend on `fs-hasher` and `leveldb`. Before config
 For some machines, you need to change the maximum number of open files allowed:
 
 ```
-$ sudo echo "* hard nofile 65535" >> /etc/security/limits.conf
-$ sudo echo "* soft nofile 65535" >> /etc/security/limits.conf
+$ sudo su
+$ echo "* hard nofile 65535" >> /etc/security/limits.conf
+$ echo "* soft nofile 65535" >> /etc/security/limits.conf
 ```
 
 ## Attacks 
