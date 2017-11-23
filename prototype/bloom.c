@@ -179,7 +179,7 @@ bool bloom_init_conf(struct bloom * bloom) {
 			char tmp0 = (char)sum;
 			memcpy(bloom->bf + i,&tmp0,sizeof(tmp0));
 		}
-		cout<<"bloom data read number: "<<cnt<<endl;
+		// cout<<"bloom data read number: "<<cnt<<endl;
 		in.close();
 		return true;
 	}
@@ -194,7 +194,7 @@ bool bloom_conf_out(struct bloom * bloom) {
 	BLM.open("./conf/bloomConf", ios::out | ios::binary);
 	if (!BLM.is_open()) {
 
-		cout<<"creat file faile"<<endl;
+		// cout<<"creat file faile"<<endl;
 		return false;
 	}
 	int cnt = 0;
@@ -209,7 +209,7 @@ bool bloom_conf_out(struct bloom * bloom) {
 			}				
 		}
     }
-	cout<<endl<<"bloom data write number: "<<cnt<<endl;
+	// cout<<endl<<"bloom data write number: "<<cnt<<endl;
 	BLM.close();
 	return true;
 }

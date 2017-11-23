@@ -209,7 +209,7 @@ void read_hashes(FILE *fp)
 					uint64_t i_v = 1;
 					i_str.assign((char*)&i_v, sizeof(uint64_t));
 					existing_value += i_str;
-				}else {printf("there is %s\n", status.ToString().c_str());exit(1);//leveldb error maybe too many files.}
+				}else {printf("there is %s\n", status.ToString().c_str());exit(1);}//leveldb error maybe too many files.
 			}
 
 			leveldb::Slice now(existing_value.c_str(), existing_value.size());

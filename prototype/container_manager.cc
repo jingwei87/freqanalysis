@@ -22,7 +22,7 @@ int container_manager::init(char *path)
 	}
 	else
 	{
-		fscanf(fl, "%d", &now_id);
+		assert(fscanf(fl, "%d", &now_id) > 0);
 		now_size = 0;
 		now_key = "";
 		tmp.clear();

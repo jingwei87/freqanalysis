@@ -82,8 +82,16 @@ void read_hashes(FILE *fp)
 			count = *(uint64_t *)existing_value.c_str();
 			count++;
 			status = db->Delete(leveldb::WriteOptions(), key);
-		} else count = 1;	// set 1
-	//	char count_buf[32];
+		}else 
+		{
+			if(status.IsNotFound())
+				count = 1;
+			else
+			{
+				printf("There is %s\n", status.ToString().c_str());//leveldb error!
+				exit(1);
+			}
+		}//char count_buf[32];
 		//memset(count_buf, 0, 32);
 		//sprintf(count_buf, "%lu", count);
 		string count_buf;
@@ -136,13 +144,18 @@ void read_hashes(FILE *fp)
 				}
 				status = store_left->Delete(leveldb::WriteOptions(), key);
 			}else
-			{
-				existing_value = last_value;
-				std::string i_str;
-				i_str.resize(sizeof(uint64_t));
-				uint64_t i_v = 1;
-				i_str.assign((char*)&i_v, sizeof(uint64_t));
-				existing_value += i_str;
+			{	if(status.IsNotFound())
+				{
+					existing_value = last_value;
+					std::string i_str;
+					i_str.resize(sizeof(uint64_t));
+					uint64_t i_v = 1;
+					i_str.assign((char*)&i_v, sizeof(uint64_t));
+					existing_value += i_str;
+				}else {
+					printf("some error:%s\n", status.ToString().c_str());
+					exit(1);//leveldb error;
+					}
 			}
 
 			leveldb::Slice current(existing_value.c_str(), existing_value.size());
@@ -188,12 +201,15 @@ void read_hashes(FILE *fp)
 				status = store_right->Delete(leveldb::WriteOptions(), pre);
 			}else
 			{
-				existing_value = next_value;
-				std::string i_str;
-				i_str.resize(sizeof(uint64_t));
-				uint64_t i_v = 1;
-				i_str.assign((char*)&i_v, sizeof(uint64_t));
-				existing_value += i_str;
+				if(status.IsNotFound())
+				{
+					existing_value = next_value;
+					std::string i_str;
+					i_str.resize(sizeof(uint64_t));
+					uint64_t i_v = 1;
+					i_str.assign((char*)&i_v, sizeof(uint64_t));
+					existing_value += i_str;
+				}else {printf("there is %s\n", status.ToString().c_str());exit(1);}//leveldb error maybe too many files.
 			}
 
 			leveldb::Slice now(existing_value.c_str(), existing_value.size());

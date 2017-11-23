@@ -37,7 +37,7 @@ bool lrucache::init_conf(string path){
 			}
 		}
 		conf.close();
-		cout<<"LPC data read in num: "<<cnt<<endl;
+		// cout<<"LPC data read in num: "<<cnt<<endl;
 		return true;		
 	}
 	else{
@@ -98,7 +98,7 @@ bool lrucache::output_conf(){
 		}
 	}
 	*/
-	cout<<"LPC data write num: "<<cnt<<endl;
+	// cout<<"LPC data write num: "<<cnt<<endl;
 	
 	conf.close();
 	if(cnt == 0){

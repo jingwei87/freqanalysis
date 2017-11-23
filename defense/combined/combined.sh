@@ -8,7 +8,7 @@ users=('004' '007' '012' '013' '015' '028')
 # auxiliary information
 date_of_aux=('2013-01-22' '2013-02-22' '2013-03-22' '2013-04-21')
 # target latest backup 
-date_of_latest='2013-05-21'
+date_of_latest=('2013-05-21')
 
 # parameters
 u=5
@@ -22,7 +22,9 @@ for user in ${users[@]}; do
 	if [ -f "${fsl}"/${snapshot}.tar.gz ]; then
 		tar zxf "${fsl}"/${snapshot}.tar.gz  
 		fs-hasher/hf-stat -h ${snapshot}/${snapshot}.8kb.hash.anon > tmp/${snapshot} 
-		./count tmp/${snapshot} "dbs/F_${date_of_latest}/" "dbs/L_${date_of_latest}/" "dbs/R_${date_of_latest}/"  
+		# simulate MinHash encryption
+		./combined tmp/${snapshot} > tmp/E_${snapshot}
+		./count tmp/E_${snapshot} "dbs/F_${date_of_latest}/" "dbs/L_${date_of_latest}/" "dbs/R_${date_of_latest}/"  
 		rm -rf ${snapshot}
 #		rm -rf tmp/${snapshot}
 	fi
@@ -40,7 +42,7 @@ for aux in ${date_of_aux[@]}; do
 #			rm -rf tmp/${snapshot}
 		fi
 	done
-	echo "===================Attack==================="
+	echo "==========================Defense=========================="
 	echo "Auxiliary information: ${aux};  Target backup: ${date_of_latest}" 
 	echo "Parameters: (u, v, w) = (${u}, ${v}, ${w})"
 	# launch frequency analysis

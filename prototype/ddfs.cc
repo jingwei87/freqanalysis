@@ -8,10 +8,9 @@
 #include"fp_index.h"
 
 #define FP_SZIE 6
-#define ERROR 0.5
-#define BLOOM_lenth 200000
-
-#define LRU_SIZE 500000
+#define ERROR 0.01
+#define BLOOM_lenth 65000000
+#define LRU_SIZE 838608
 using namespace std;
 
 bloom *BLM;
@@ -102,7 +101,6 @@ void read_hashes(FILE *fp) {
 		}	
 	}		
 	CMR.pocessw(container_path);	// push in-memory container into disk
-	storage_access = CMR.now_id;	// storage_access is ID of last container
 	bloom_conf_out(BLM); //bloom output conf
 }
 int main(int arg, char *argv[])

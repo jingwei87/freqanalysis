@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 	Stat_Unique();
 	Fre_Analysis();
 	printf("Total number of unique ciphertext chunks: %lu\nCorrect inferences: %lu\n", Unique, Correct);
-	printf("inference rate: %lf%%\n\n",(double)((double)Correct/Unique) * 100.0);
+	printf("Inference rate: %lf%%\n\n",(double)((double)Correct/Unique) * 100.0);
 	printf("Successfully inferred following chunks:\n");
 	while(!ansq.empty())
 	{
